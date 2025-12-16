@@ -1,0 +1,30 @@
+2025-12-16 08:17:53,834 - Deception Engine activated at MEDIUM level
+2025-12-16 08:17:53,835 - Deployed honeypot: fake_ssh_0 on port 2222
+2025-12-16 08:17:53,837 - Honeypot fake_ssh_0 listening on port 2222
+2025-12-16 08:17:53,837 - Honeypot fake_web_1 listening on port 8088
+2025-12-16 08:17:53,837 - Deployed honeypot: fake_web_1 on port 8088
+2025-12-16 08:21:45,699 - Deception Engine activated at MEDIUM level
+2025-12-16 08:21:45,701 - Deployed honeypot: fake_ssh_2 on port 2222
+2025-12-16 08:21:45,702 - Failed to start honeypot fake_web_3: [Errno 98] Address already in use
+2025-12-16 08:21:45,703 - Deployed honeypot: fake_web_3 on port 8088
+2025-12-16 08:21:45,703 - Failed to start honeypot fake_ssh_2: [Errno 98] Address already in use
+2025-12-16 08:21:52,108 - Deception Event: CONNECTION_ATTEMPT from 127.0.0.1
+2025-12-16 08:23:29,762 - Deception Engine activated at HIGH level
+2025-12-16 08:23:29,763 - Deployed honeypot: fake_ssh_4 on port 2222
+2025-12-16 08:23:29,766 - Deployed honeypot: fake_web_5 on port 8088
+2025-12-16 08:23:29,767 - Failed to start honeypot fake_ssh_4: [Errno 98] Address already in use
+2025-12-16 08:23:29,767 - Failed to start honeypot fake_web_5: [Errno 98] Address already in use
+2025-12-16 08:23:29,774 - Deployed honeypot: fake_db_6 on port 3307
+2025-12-16 08:23:29,785 - Honeypot fake_db_6 listening on port 3307
+2025-12-16 08:23:51,352 - Deception Engine deactivated
+2025-12-16 09:10:29,323 - Deception Engine activated at MEDIUM level
+2025-12-16 09:10:29,324 - Honeypot fake_ssh_0 listening on port 2222
+2025-12-16 09:10:29,325 - Deployed honeypot: fake_ssh_0 on port 2222
+2025-12-16 09:10:29,326 - Deployed honeypot: fake_web_1 on port 8088
+2025-12-16 09:10:29,329 - Honeypot fake_web_1 listening on port 8088
+2025-12-16 09:12:12,670 - Deception Event: CONNECTION_ATTEMPT from 127.0.0.1
+2025-12-16 09:12:12,685 - Deception Event: CONNECTION_ATTEMPT from 127.0.0.1
+2025-12-16 09:12:13,882 - Deception Event: CONNECTION_ATTEMPT from 127.0.0.1
+2025-12-16 09:12:13,902 - Deception Event: CONNECTION_ATTEMPT from 127.0.0.1
+2025-12-16 09:12:18,979 - Deception Event: CONNECTION_ATTEMPT from 127.0.0.1
+2025-12-16 09:12:19,003 - Deception Event: CONNECTION_ATTEMPT from 127.0.0.1

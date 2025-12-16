@@ -1,0 +1,96 @@
+--- omega_v4_tutorial_final.py.original
++++ omega_v4_tutorial_final.py
+@@ -1,4 +1,5 @@
+ # Omega v4 - Complete Integrated Platform with Tutorial System
++# NOW WITH PHASE 2G: Beginner Tutorial & Sandbox Mode
+ 
+ import asyncio
+ import json
+@@ -8,6 +9,13 @@
+ from tutorial_engine import TutorialEngine
+ from tutorial_api import TutorialAPI
+ from tutorial_integration import TutorialIntegration
++
++# PHASE 2G IMPORTS
++try:
++    from tutorial_system import TutorialSystem
++    PHASE_2G_AVAILABLE = True
++except ImportError:
++    PHASE_2G_AVAILABLE = False
+ 
+ class OmegaV4Tutorial:
+     def __init__(self):
+@@ -23,6 +31,10 @@
+         
+         print("Omega v4 Tutorial System Initialized")
+         
++        # Initialize Phase 2G if available
++        if PHASE_2G_AVAILABLE:
++            self.tutorial_system = TutorialSystem(self.tutorial_engine)
++        
+     async def start_tutorial_mode(self, tutorial_id="beginner_path"):
+         """Start a tutorial session"""
+         print(f"\n🚀 Starting Tutorial: {tutorial_id}")
+@@ -30,6 +42,14 @@
+         # Start tutorial engine
+         await self.tutorial_engine.start_engine()
+         
++        # PHASE 2G: Check if user wants beginner tutorial
++        if PHASE_2G_AVAILABLE and tutorial_id == "beginner_first_15":
++            print("\n🌟 LAUNCHING PHASE 2G: FIRST 15 MINUTES EXPERIENCE")
++            print("Marketing Promise: 'From zero to detecting, deceiving,")
++            print("and responding to attacks in your first hour'")
++            self.tutorial_system.launch_tutorial_mode()
++            return
++        
+         # Start specific tutorial
+         tutorial = await self.tutorial_engine.get_tutorial(tutorial_id)
+         
+@@ -47,6 +67,19 @@
+             print("3. View available tutorials")
+             print("4. Check progress")
+             print("5. Exit")
++            
++            # PHASE 2G: Add beginner option
++            if PHASE_2G_AVAILABLE:
++                print("6. 🆕 BEGINNER MODE: First 15 Minutes Experience")
++            
++            # PHASE 2G: Marketing message
++            if PHASE_2G_AVAILABLE:
++                print("\n" + "="*50)
++                print("🎯 PHASE 2G AVAILABLE:")
++                print("Try 'Beginner Mode' for the complete")
++                print("Monitor → Deceive → Respond experience")
++                print("="*50)
++            
+             print("\n" + "="*50)
+             
+             choice = input("\nSelect option: ").strip()
+@@ -67,6 +100,11 @@
+                 print("\n📊 Your Progress:")
+                 await self.check_progress()
+                 
++            elif choice == "6" and PHASE_2G_AVAILABLE:
++                # PHASE 2G: Launch beginner experience
++                await self.start_tutorial_mode("beginner_first_15")
++                input("\nPress Enter to continue...")
++                
+             elif choice == "5":
+                 print("\n👋 Exiting Omega Tutorial System")
+                 break
+@@ -83,6 +121,15 @@
+     async def main(self):
+         """Main entry point"""
+         print("\n" + "="*60)
++        
++        # PHASE 2G: Marketing header
++        if PHASE_2G_AVAILABLE:
++            print("🌟 PROJECT OMEGA v4 WITH PHASE 2G 🌟")
++            print("The First All-in-One, Open-Source Security Training Platform")
++            print("\nKey Features:")
++            print("• Complete defensive lifecycle (Monitor→Deceive→Respond)")
++            print("• Safe sandbox environment")
++            print("• Beginner-friendly tutorial system")
+         
+         print("🚀 Omega v4 - Complete Security Training Platform")
+         print("="*60)

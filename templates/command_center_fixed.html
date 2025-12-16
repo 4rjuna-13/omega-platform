@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT OMEGA :: COMMAND CENTER (FIXED)</title>
+    
+    <!-- SECURE BUT PERMISSIVE CSP FOR DEVELOPMENT -->
+    <!-- Allows: Socket.IO CDN, inline scripts/styles, WebSockets -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' https://cdn.socket.io 'unsafe-inline';
+        style-src 'self' 'unsafe-inline';
+        connect-src 'self' ws://localhost:8080 wss://localhost:8080;
+        img-src 'self' data:;
+        font-src 'self';
+    ">
+    
+    <style>
+        :root {
+            --omega-primary: #0a2e5c;
+            --omega-secondary: #1e4d8c;
+            --omega-accent: #00d4aa;
+            --omega-danger: #ff4757;
+            --omega-warning: #ffa502;
+            --omega-success: #2ed573;
+            --omega-dark: #0d1b2a;
+            --omega-light: #e2e8f0;
+            --bg-primary: var(--omega-dark);
+            --bg-secondary: #1b263b;
+            --text-primary: var(--omega-light);
+            --text-secondary: #94a3b8;
+            --border-color: #2d3748;
+            --card-bg: rgba(30, 41, 59, 0.7);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 212, 170, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 85% 30%, rgba(30, 77, 140, 0.03) 0%, transparent 20%);
+        }
+        
+        /* SIMPLE LAYOUT */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .header { text-align: center; margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--omega-accent); }
+        
+        .mode-selector {
+            display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem;
+            background: var(--card-bg); padding: 1rem; border-radius: 12px;
+            max-width: 500px; margin-left: auto; margin-right: auto;
+        }
+        
+        .mode-btn {
+            padding: 0.8rem 1.5rem; border: none; border-radius: 8px;
+            background: var(--omega-secondary); color: white;
+            cursor: pointer; font-weight: 600; font-size: 1rem;
+            transition: all 0.3s ease; flex: 1;
+        }
+        
+        .mode-btn:hover { background: var(--omega-primary); transform: translateY(-2px); }
+        .mode-btn.active { background: var(--omega-accent); color: var(--omega-dark); box-shadow: 0 5px 15px rgba(0, 212, 170, 0.3); }
+        
+        /* INTERFACE SECTIONS */
+        .interface-section { display: none; animation: fadeIn 0.5s ease; }
+        .interface-section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* SIMPLE INTERFACE */
+        .simple-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem; margin-top: 2rem;
+        }
+        
+        .action-card {
+            background: var(--card-bg); border-radius: 12px; padding: 1.5rem;
+            border: 1px solid var(--border-color); transition: all 0.3s ease;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px); border-color: var(--omega-accent);
+            box-shadow: 0 10px 25px rgba(0, 212, 170, 0.15);
+        }
+        
+        /* ADVANCED INTERFACE */
+        .advanced-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem; margin-top: 2rem;
+        }
+        
+        .metric-card {
+            background: var(--card-bg); border-radius: 12px; padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0;
+            background: linear-gradient(135deg, var(--omega-accent), var(--omega-secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        /* STATUS INDICATORS */
+        .status-indicator {
+            display: inline-block; width: 10px; height: 10px;
+            border-radius: 50%; margin-right: 0.5rem;
+        }
+        
+        .status-online { background: var(--omega-success); box-shadow: 0 0 8px var(--omega-success); }
+        .status-offline { background: var(--omega-danger); }
+        
+        /* CONSOLE OUTPUT */
+        .console {
+            background: #0d1b2a; color: #00d4aa; padding: 1rem;
+            border-radius: 8px; font-family: 'Courier New', monospace;
+            font-size: 0.9rem; margin-top: 2rem; max-height: 200px; overflow-y: auto;
+            border: 1px solid #1e4d8c;
+        }
+        
+        .console-line { margin-bottom: 0.3rem; }
+        .console-timestamp { color: #94a3b8; margin-right: 1rem; }
+        .console-message { color: #e2e8f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                <span style="background: linear-gradient(135deg, var(--omega-accent), var(--omega-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    PROJECT OMEGA
+                </span>
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                COMMAND CENTER v1.0 • Janus Architecture • Dual Interface System
+            </p>
+            <p id="connection-status" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--card-bg); border-radius: 8px; display: inline-block;">
+                🔄 Connecting to Command Center...
+            </p>
+        </div>
+        
+        <!-- MODE SELECTOR -->
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btn-simple" onclick="switchInterface('simple')">
+                🧭 Simple Mode (Guided Operations)
+            </button>
+            <button class="mode-btn" id="btn-advanced" onclick="switchInterface('advanced')">
+                ⚙️ Advanced Mode (Full Control)
+            </button>
+        </div>
+        
+        <!-- SIMPLE INTERFACE -->
+        <div id="simple-interface" class="interface-section active">
+            <h2 style="margin-bottom: 1rem; color: var(--omega-accent);">🧭 Simple Command Interface</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Guided security operations with one-click actions and automated recommendations.
+            </p>
+            
+            <div class="simple-grid">
+                <div class="action-card" onclick="executeSimpleAction('scan_network')">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🛡️</div>
+                    <h3 style="margin-bottom: 0.5rem;">Quick Network Scan</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Run a safe, automated network vulnerability scan.</p>
+                    <button style="background: var(--omega-secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; width: 100%;">
+                        Execute Scan
+                    </button>
+                </div>
+                
+                <div class="action-card" onclick="executeSimpleAction('analyze_threats')">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">📊</div>
+                    <h3 style="margin-bottom: 0.5rem;">Analyze Threat Data</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Process recent security events with ML prediction model.</p>
+                    <button style="background: var(--omega-secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; width: 100%;">
+                        Run Analysis
+                    </button>
+                </div>
+                
+                <div class="action-card" onclick="executeSimpleAction('run_simulation')">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🎯</div>
+                    <h3 style="margin-bottom: 0.5rem;">Defense Simulation</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Test Omega's response to simulated attack scenarios.</p>
+                    <button style="background: var(--omega-secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; width: 100%;">
+                        Start Simulation
+                    </button>
+                </div>
+            </div>
+            
+            <div class="console" id="simple-console">
+                <div class="console-line"><span class="console-timestamp">[SYSTEM]</span><span class="console-message">Simple interface ready. Select an action above.</span></div>
+            </div>
+        </div>
+        
+        <!-- ADVANCED INTERFACE -->
+        <div id="advanced-interface" class="interface-section">
+            <h2 style="margin-bottom: 1rem; color: var(--omega-accent);">⚙️ Advanced Control Panel</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Direct module control, real-time metrics, and system configuration.
+            </p>
+            
+            <div class="advanced-grid">
+                <div class="metric-card">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--text-secondary);">System Health</h3>
+                    <div class="metric-value" id="metric-health">94%</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        <span class="status-indicator status-online"></span>
+                        All core modules operational
+                    </p>
+                </div>
+                
+                <div class="metric-card">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Threats Blocked</h3>
+                    <div class="metric-value" id="metric-threats">128</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Last 24 hours • <span style="color: var(--omega-success);">+12%</span></p>
+                </div>
+                
+                <div class="metric-card">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Predictive Accuracy</h3>
+                    <div class="metric-value" id="metric-accuracy">52.8%</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">ML Model • <span style="color: var(--omega-success);">+2.8% this week</span></p>
+                </div>
+                
+                <div class="metric-card">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Active Connections</h3>
+                    <div class="metric-value" id="metric-connections">4</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        <span class="status-indicator status-online"></span> Command Center<br>
+                        <span class="status-indicator status-online"></span> Predictive Model<br>
+                        <span class="status-indicator status-online"></span> Voice Interface<br>
+                        <span class="status-indicator status-online"></span> Security Scanner
+                    </p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius: 12px;">
+                <h3 style="margin-bottom: 1rem; color: var(--omega-accent);">Module Control</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <button style="padding: 0.8rem; background: var(--omega-secondary); color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="controlModule('predictive', 'train')">
+                        🔄 Train ML Model
+                    </button>
+                    <button style="padding: 0.8rem; background: var(--omega-secondary); color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="controlModule('voice', 'listen')">
+                        🎤 Activate Voice
+                    </button>
+                    <button style="padding: 0.8rem; background: var(--omega-accent); color: var(--omega-dark); border: none; border-radius: 8px; cursor: pointer; font-weight: 600;" onclick="runSimulation()">
+                        🎯 Run Attack Simulation
+                    </button>
+                    <button style="padding: 0.8rem; background: var(--omega-warning); color: var(--omega-dark); border: none; border-radius: 8px; cursor: pointer; font-weight: 600;" onclick="refreshAllData()">
+                        🔄 Refresh All Data
+                    </button>
+                </div>
+            </div>
+            
+            <div class="console" id="advanced-console">
+                <div class="console-line"><span class="console-timestamp">[SYSTEM]</span><span class="console-message">Advanced control panel initialized. Module controls active.</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SOCKET.IO -->
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    
+    <!-- MAIN JAVASCRIPT -->
+    <script>
+        // ===== GLOBAL STATE =====
+        let socket = null;
+        let currentInterface = 'simple';
+        let connectionEstablished = false;
+        
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Omega Command Center (Fixed) Initializing...');
+            initializeSocketConnection();
+            
+            // Set up event listeners
+            document.getElementById('btn-simple').addEventListener('click', () => switchInterface('simple'));
+            document.getElementById('btn-advanced').addEventListener('click', () => switchInterface('advanced'));
+            
+            // Initial console message
+            logToConsole('system', 'Omega Command Center v1.0 loaded');
+            logToConsole('system', 'Dual-interface system ready');
+            logToConsole('system', 'WebSocket connection initializing...');
+        });
+        
+        // ===== SOCKET.IO CONNECTION =====
+        function initializeSocketConnection() {
+            // Connect to the server
+            socket = io('http://localhost:8080', {
+                transports: ['websocket', 'polling'],
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000
+            });
+            
+            // Connection events
+            socket.on('connect', function() {
+                console.log('✅ Connected to Omega Command Center server');
+                connectionEstablished = true;
+                
+                document.getElementById('connection-status').innerHTML = '✅ Connected to Command Center • WebSocket Active';
+                document.getElementById('connection-status').style.backgroundColor = 'rgba(46, 213, 115, 0.2)';
+                document.getElementById('connection-status').style.color = 'var(--omega-success)';
+                
+                logToConsole('system', 'WebSocket connection established');
+                logToConsole('system', 'Server handshake complete');
+                
+                // Request initial data
+                socket.emit('get_initial_data');
+            });
+            
+            socket.on('connected', function(data) {
+                console.log('Server welcome:', data);
+                logToConsole('server', `Welcome: ${data.message}`);
+            });
+            
+            socket.on('mode_changed', function(data) {
+                console.log('Mode changed confirmation:', data);
+                logToConsole('server', `Interface switched to ${data.mode} mode`);
+            });
+            
+            socket.on('action_complete', function(data) {
+                console.log('Action completed:', data);
+                logToConsole('action', `Action "${data.action}" completed: ${data.result}`);
+                alert(`Action "${data.action}" completed successfully!`);
+            });
+            
+            socket.on('simulation_complete', function(data) {
+                console.log('Simulation complete:', data);
+                logToConsole('simulation', `Simulation "${data.scenario}" completed`);
+                alert(`🎯 Simulation Complete!\n\nScenario: ${data.scenario}\nCheck console for detailed results.`);
+            });
+            
+            socket.on('disconnect', function() {
+                console.log('❌ Disconnected from server');
+                connectionEstablished = false;
+                
+                document.getElementById('connection-status').innerHTML = '⚠️ Disconnected from Command Center • Attempting to reconnect...';
+                document.getElementById('connection-status').style.backgroundColor = 'rgba(255, 165, 2, 0.2)';
+                document.getElementById('connection-status').style.color = 'var(--omega-warning)';
+                
+                logToConsole('system', 'WARNING: Disconnected from server');
+            });
+            
+            socket.on('connect_error', function(error) {
+                console.error('Connection error:', error);
+                logToConsole('error', `Connection failed: ${error.message}`);
+                
+                // Fallback to polling if websocket fails
+                socket.io.opts.transports = ['polling', 'websocket'];
+            });
+        }
+        
+        // ===== INTERFACE SWITCHING =====
+        function switchInterface(mode) {
+            if (mode === currentInterface) return;
+            
+            console.log(`Switching to ${mode} interface...`);
+            
+            // Update UI
+            document.getElementById('btn-simple').classList.toggle('active', mode === 'simple');
+            document.getElementById('btn-advanced').classList.toggle('active', mode === 'advanced');
+            
+            document.getElementById('simple-interface').classList.toggle('active', mode === 'simple');
+            document.getElementById('advanced-interface').classList.toggle('active', mode === 'advanced');
+            
+            currentInterface = mode;
+            
+            // Notify server via WebSocket
+            if (connectionEstablished && socket) {
+                socket.emit('mode_change', { mode: mode });
+                logToConsole('ui', `Switched to ${mode} interface`);
+            } else {
+                logToConsole('ui', `Switched to ${mode} interface (offline mode)`);
+            }
+            
+            // Refresh data for the new interface
+            if (mode === 'advanced') {
+                refreshAdvancedMetrics();
+            }
+        }
+        
+        // ===== SIMPLE ACTIONS =====
+        function executeSimpleAction(action) {
+            console.log(`Executing simple action: ${action}`);
+            
+            if (!connectionEstablished || !socket) {
+                alert('⚠️ Cannot execute action: Not connected to server');
+                logToConsole('error', `Failed to execute ${action}: No server connection`);
+                return;
+            }
+            
+            logToConsole('action', `Executing: ${action}`);
+            
+            // Show loading state
+            const oldText = event.target.textContent;
+            event.target.textContent = 'Processing...';
+            event.target.disabled = true;
+            
+            // Send to server
+            socket.emit('simple_action', { action: action });
+            
+            // Restore button after 2 seconds (in case server doesn't respond)
+            setTimeout(() => {
+                event.target.textContent = oldText;
+                event.target.disabled = false;
+            }, 2000);
+        }
+        
+        // ===== ADVANCED CONTROLS =====
+        function controlModule(module, command) {
+            console.log(`Module control: ${module}.${command}`);
+            logToConsole('module', `Sending command to ${module}: ${command}`);
+            
+            if (connectionEstablished && socket) {
+                socket.emit('module_command', { module: module, command: command });
+            } else {
+                alert(`Simulating: ${module}.${command} (offline mode)`);
+                logToConsole('module', `Simulated ${module}.${command} (offline)`);
+            }
+        }
+        
+        function runSimulation() {
+            console.log('Running simulation...');
+            logToConsole('simulation', 'Initiating attack simulation...');
+            
+            if (connectionEstablished && socket) {
+                socket.emit('run_simulation', { scenario: 'port_scan_escalation' });
+            } else {
+                // Fallback to HTTP API
+                fetch('/api/simulate/port_scan_escalation')
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(`Simulation "${data.scenario}" completed!`);
+                        logToConsole('simulation', `HTTP simulation completed: ${data.scenario}`);
+                    })
+                    .catch(error => {
+                        console.error('Simulation error:', error);
+                        logToConsole('error', `Simulation failed: ${error.message}`);
+                    });
+            }
+        }
+        
+        function refreshAllData() {
+            console.log('Refreshing all data...');
+            logToConsole('system', 'Manual refresh initiated');
+            
+            if (currentInterface === 'advanced') {
+                refreshAdvancedMetrics();
+            }
+            
+            // Also refresh via server if connected
+            if (connectionEstablished && socket) {
+                socket.emit('refresh_data');
+            }
+        }
+        
+        function refreshAdvancedMetrics() {
+            // Update metrics with simulated data
+            const metrics = {
+                health: 94 + Math.floor(Math.random() * 4),
+                threats: 128 + Math.floor(Math.random() * 10),
+                accuracy: 52.8 + (Math.random() * 2 - 1),
+                connections: 4
+            };
+            
+            document.getElementById('metric-health').textContent = metrics.health + '%';
+            document.getElementById('metric-threats').textContent = metrics.threats;
+            document.getElementById('metric-accuracy').textContent = metrics.accuracy.toFixed(1) + '%';
+            document.getElementById('metric-connections').textContent = metrics.connections;
+            
+            logToConsole('data', `Metrics refreshed: Health=${metrics.health}%, Threats=${metrics.threats}`);
+        }
+        
+        // ===== CONSOLE LOGGING =====
+        function logToConsole(type, message) {
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            const consoleElement = document.getElementById(currentInterface + '-console');
+            
+            if (!consoleElement) return;
+            
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            
+            let typeClass = 'console-timestamp';
+            if (type === 'error') typeClass = 'console-error';
+            else if (type === 'action') typeClass = 'console-action';
+            else if (type === 'simulation') typeClass = 'console-simulation';
+            
+            line.innerHTML = `<span class="${typeClass}">[${timestamp.toUpperCase()}]</span>
+                             <span class="console-message">${message}</span>`;
+            
+            consoleElement.appendChild(line);
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+            
+            // Keep only last 50 lines
+            const lines = consoleElement.querySelectorAll('.console-line');
+            if (lines.length > 50) {
+                lines[0].remove();
+            }
+        }
+        
+        // ===== INITIAL DATA LOAD =====
+        window.addEventListener('load', function() {
+            // Set up some initial metrics
+            setTimeout(() => {
+                refreshAdvancedMetrics();
+                logToConsole('system', 'Initial data loaded successfully');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
