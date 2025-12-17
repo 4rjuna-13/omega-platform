@@ -1,0 +1,47 @@
+[
+  {
+    "event_id": "event_001",
+    "timestamp": "2025-12-16T23:50:23.640217Z",
+    "event_type": "simulation_start",
+    "scenario_id": "phishing_001",
+    "scenario_name": "Basic Phishing Test",
+    "threat_level": "medium",
+    "mitre_techniques": [
+      "T1566"
+    ],
+    "details": {
+      "status": "completed",
+      "user": "test_user"
+    }
+  },
+  {
+    "event_id": "event_002",
+    "timestamp": "2025-12-16T23:50:23.640236Z",
+    "event_type": "threat_detected",
+    "scenario_id": "phish_001",
+    "scenario_name": "Basic Phishing",
+    "threat_level": "high",
+    "mitre_techniques": [
+      "T1566"
+    ],
+    "details": {
+      "confidence": 0.85,
+      "source_ip": "192.168.1.100"
+    }
+  },
+  {
+    "event_type": "simulation_execution",
+    "scenario_id": "my_test",
+    "scenario_name": "Scenario: my_test",
+    "threat_level": "medium",
+    "mitre_techniques": [
+      "T1566"
+    ],
+    "details": {
+      "user": "tester",
+      "action": "phishing_sim"
+    },
+    "event_id": "event_003",
+    "timestamp": "2025-12-16T23:54:10.315138Z"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "id": "phishing_001",
+  "name": "Basic Phishing Test",
+  "description": "Test phishing scenario",
+  "mitre_techniques": [
+    "T1566"
+  ],
+  "difficulty": "easy"
+}
