@@ -1,139 +1,179 @@
 """
-import os
 Omega Engine - Core orchestration engine
 """
-
-import time
-import threading
-from typing import Dict, Any, Optional
+import os
+import sys
 import logging
+from typing import Dict, Any, Optional, List
+from datetime import datetime
+from pathlib import Path
 
-logger = logging.getLogger(__name__)
+from omega_platform.core.config_loader import ConfigLoader
+from omega_platform.core.logging_setup import setup_logging
 
 class OmegaEngine:
-    """Main Omega Platform engine"""
+    """Main engine orchestrating all platform components."""
     
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
-        self.modules = {}
-        self.running = False
-        self.start_time = None
-        self._load_modules()
+    def __init__(self, env: str = "development"):
+        """Initialize Omega Engine with environment."""
+        self.env = env
+        self.config_loader = ConfigLoader(env)
+        self.config = self.config_loader.load_config()
         
-    def _load_modules(self):
-        """Dynamically load configured modules"""
-        logger.info("Loading Omega modules...")
+        # Setup logging
+        self.logger = setup_logging(
+            name="OmegaEngine",
+            level=self.config.get("logging", {}).get("level", "INFO"),
+            log_file=self.config.get("logging", {}).get("file", "omega_platform.log")
+        )
         
-        # Load core modules from config
-        module_configs = self.config.get('modules', {})
+        # Initialize modules
+        self.modules: Dict[str, Any] = {}
+        self._is_running = False
         
-        for module_name, module_config in module_configs.items():
-            if module_config.get('enabled', False):
-                try:
-                    # Dynamic import based on module name
-                    import importlib
-                    module_path = f"omega_platform.modules.{module_name}"
-                    module_class = getattr(
-                        importlib.import_module(module_path),
-                        f"{module_name.capitalize()}Module"
-                    )
-                    
-                    # Initialize module
-                    self.modules[module_name] = module_class(
-                        config=module_config,
-                        engine=self
-                    )
-                    logger.info(f"Loaded module: {module_name}")
-                    
-                except Exception as e:
-                    logger.error(f"Failed to load module {module_name}: {e}")
+        self.logger.info(f"Omega Engine initialized for environment: {env}")
     
-    def start(self):
-        """Start the Omega engine and all modules"""
-        if self.running:
-            logger.warning("Engine is already running")
-            return
-        
-        logger.info("Starting Omega Engine...")
-        self.start_time = time.time()
-        self.running = True
-        
-        # Start all modules
-        for name, module in self.modules.items():
-            try:
-                module.start()
-                logger.info(f"Started module: {name}")
-            except Exception as e:
-                logger.error(f"Failed to start module {name}: {e}")
-        
-        logger.info(f"Omega Engine started successfully (PID: {os.getpid()})")
-        
-        # Keep running
+    def load_module(self, module_name: str) -> bool:
+        """Dynamically load a module."""
         try:
-            while self.running:
-                time.sleep(1)
-                self._check_modules()
-        except KeyboardInterrupt:
-            logger.info("Shutdown signal received")
-            self.stop()
+            module_path = f"omega_platform.modules.{module_name}"
+            __import__(module_path)
+            module_class = getattr(sys.modules[module_path], f"{module_name.capitalize()}Module")
+            
+            module_config = self.config.get("modules", {}).get(module_name, {})
+            module_instance = module_class(module_config)
+            
+            self.modules[module_name] = module_instance
+            self.logger.info(f"✅ Module loaded: {module_name}")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"❌ Failed to load module {module_name}: {e}")
+            return False
     
-    def stop(self):
-        """Stop the Omega engine and all modules"""
-        logger.info("Stopping Omega Engine...")
-        self.running = False
+    def load_all_modules(self) -> Dict[str, bool]:
+        """Load all configured modules."""
+        module_results = {}
+        modules_to_load = self.config.get("modules", {}).keys()
         
-        # Stop all modules in reverse order
-        for name, module in reversed(list(self.modules.items())):
-            try:
-                module.stop()
-                logger.info(f"Stopped module: {name}")
-            except Exception as e:
-                logger.error(f"Failed to stop module {name}: {e}")
+        self.logger.info(f"Loading modules: {list(modules_to_load)}")
         
-        logger.info("Omega Engine stopped")
+        for module_name in modules_to_load:
+            success = self.load_module(module_name)
+            module_results[module_name] = success
+        
+        return module_results
     
-    def status(self):
-        """Get engine status"""
-        uptime = time.time() - self.start_time if self.start_time else 0
+    def start(self) -> bool:
+        """Start the Omega Engine and all modules."""
+        try:
+            self.logger.info("🚀 Starting Omega Engine...")
+            
+            # Load all modules
+            module_results = self.load_all_modules()
+            
+            # Start all successfully loaded modules
+            for module_name, module_instance in self.modules.items():
+                try:
+                    if hasattr(module_instance, 'start'):
+                        module_instance.start()
+                        self.logger.info(f"✅ Module started: {module_name}")
+                except Exception as e:
+                    self.logger.error(f"❌ Failed to start module {module_name}: {e}")
+            
+            self._is_running = True
+            self.logger.info(f"✅ Omega Engine started successfully (PID: {os.getpid()})")
+            self.logger.info(f"📊 Loaded {len(self.modules)} modules")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"❌ Failed to start Omega Engine: {e}")
+            return False
+    
+    def stop(self) -> bool:
+        """Stop the Omega Engine and all modules."""
+        try:
+            self.logger.info("🛑 Stopping Omega Engine...")
+            
+            # Stop all modules
+            for module_name, module_instance in self.modules.items():
+                try:
+                    if hasattr(module_instance, 'stop'):
+                        module_instance.stop()
+                        self.logger.info(f"✅ Module stopped: {module_name}")
+                except Exception as e:
+                    self.logger.warning(f"⚠️ Error stopping module {module_name}: {e}")
+            
+            self._is_running = False
+            self.logger.info("✅ Omega Engine stopped successfully")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"❌ Error stopping Omega Engine: {e}")
+            return False
+    
+    def status(self) -> Dict[str, Any]:
+        """Get engine status."""
+        module_statuses = {}
+        for module_name, module_instance in self.modules.items():
+            if hasattr(module_instance, 'status'):
+                module_statuses[module_name] = module_instance.status()
+            else:
+                module_statuses[module_name] = {"status": "unknown"}
         
-        status = {
-            "running": self.running,
-            "uptime": uptime,
+        return {
+            "engine": {
+                "status": "running" if self._is_running else "stopped",
+                "environment": self.env,
+                "pid": os.getpid(),
+                "start_time": datetime.now().isoformat(),
+                "modules_loaded": list(self.modules.keys())
+            },
+            "modules": module_statuses,
+            "config": {
+                "environment": self.env,
+                "config_file": self.config_loader.config_path
+            }
+        }
+    
+    def run_simulation(self, scenario: str, intensity: str = "medium") -> Dict[str, Any]:
+        """Run a simulation scenario."""
+        if "simulation" not in self.modules:
+            return {"error": "Simulation module not loaded"}
+        
+        try:
+            self.logger.info(f"🏃 Starting simulation: {scenario} ({intensity})")
+            result = self.modules["simulation"].run_scenario(scenario, intensity)
+            self.logger.info(f"✅ Simulation completed: {scenario}")
+            return result
+        except Exception as e:
+            self.logger.error(f"❌ Simulation failed: {scenario} - {e}")
+            return {"error": str(e)}
+    
+    def get_metrics(self) -> Dict[str, Any]:
+        """Get system metrics."""
+        metrics = {
+            "engine": {
+                "status": "running" if self._is_running else "stopped",
+                "modules_count": len(self.modules),
+                "uptime": "N/A",  # Would track in production
+            },
             "modules": {},
-            "version": self.get_version()
+            "system": {
+                "memory_usage": "N/A",
+                "cpu_usage": "N/A",
+                "disk_usage": "N/A"
+            }
         }
         
-        for name, module in self.modules.items():
-            status["modules"][name] = module.status()
+        # Add module-specific metrics
+        for module_name, module_instance in self.modules.items():
+            if hasattr(module_instance, 'get_metrics'):
+                metrics["modules"][module_name] = module_instance.get_metrics()
         
-        # Pretty print status
-        print(f"Omega Platform Status:")
-        print(f"  Version: {status['version']}")
-        print(f"  Running: {status['running']}")
-        print(f"  Uptime: {uptime:.2f} seconds")
-        print(f"  Modules ({len(status['modules'])}):")
-        
-        for name, module_status in status["modules"].items():
-            print(f"    - {name}: {module_status}")
-    
-    def get_version(self):
-        """Get Omega Platform version"""
-        return "3.0.0"  # Should come from package metadata
-    
-    def _check_modules(self):
-        """Periodic health check of all modules"""
-        for name, module in self.modules.items():
-            if hasattr(module, 'health_check'):
-                try:
-                    health = module.health_check()
-                    if not health.get('healthy', True):
-                        logger.warning(f"Module {name} unhealthy: {health.get('message', 'Unknown')}")
-                except Exception as e:
-                    logger.error(f"Health check failed for module {name}: {e}")
-    
-    def run_tests(self):
-        """Run platform tests"""
-        logger.info("Running platform tests...")
-        # This would trigger the test suite
-        # For now, just a placeholder
-        print("Test functionality to be implemented")
+        return metrics
+
+def create_engine(env: str = "development") -> OmegaEngine:
+    """Factory function to create Omega Engine instance."""
+    return OmegaEngine(env)
