@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Project Omega - Deception Engine Active</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        h1 { 
+            color: #4CAF50; 
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: #1a1a2e;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #2d2d4d;
+        }
+        
+        .card h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2d2d4d;
+            padding-bottom: 10px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            background: #0f0f1a;
+            border-radius: 5px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .deception-controls {
+            background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+        }
+        
+        .deception-controls:hover {
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        .logs {
+            background: #1a1a2e;
+            border-radius: 10px;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-left: 3px solid #4CAF50;
+            background: #0f0f1a;
+        }
+        
+        .deception-event {
+            border-left-color: #ff9800;
+        }
+        
+        .threat-event {
+            border-left-color: #f44336;
+        }
+        
+        .deception-panel {
+            display: none;
+            background: rgba(255, 152, 0, 0.1);
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .deception-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .stat-box {
+            background: rgba(255, 152, 0, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff9800;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 PROJECT OMEGA COMMAND CENTER</h1>
+            <div class="status-badge">DECEPTION ENGINE ACTIVE • PHASE 2E</div>
+            <p>Visual intelligence for tactical security operations</p>
+            <p id="connection-status">🔗 Connecting to Omega Server...</p>
+        </header>
+        
+        <div class="controls">
+            <button onclick="simulateThreat()">⚠️ Simulate Threat</button>
+            <button onclick="startScan()">🔍 Network Scan</button>
+            <button onclick="toggleMode()">🔄 Toggle Mode</button>
+            <button class="deception-controls" onclick="toggleDeceptionPanel()">🕵️ Deception Controls</button>
+        </div>
+        
+        <div id="deceptionPanel" class="deception-panel">
+            <h3>🕵️ DECEPTION ENGINE</h3>
+            <div class="deception-stats" id="deceptionStats">
+                <div class="stat-box">
+                    <div class="stat-value" id="deceptionActive">OFF</div>
+                    <div class="stat-label">Status</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="honeypotsCount">0</div>
+                    <div class="stat-label">Honeypots</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="connectionsCount">0</div>
+                    <div class="stat-label">Connections</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="attackersCount">0</div>
+                    <div class="stat-label">Attackers</div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button onclick="startDeception('LOW')">🟢 Start LOW</button>
+                <button onclick="startDeception('MEDIUM')">🟡 Start MEDIUM</button>
+                <button onclick="startDeception('HIGH')">🔴 Start HIGH</button>
+                <button onclick="stopDeception()">⛔ Stop Deception</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <button onclick="deployHoneypot('fake_ssh')">🖥️ Deploy SSH Honeypot</button>
+                <button onclick="deployHoneypot('fake_web')">🌐 Deploy Web Honeypot</button>
+                <button onclick="deployHoneypot('fake_db')">🗄️ Deploy DB Honeypot</button>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3>📊 System Metrics</h3>
+                <div class="metric">
+                    <span>CPU Usage:</span>
+                    <span id="cpuUsage">--%</span>
+                </div>
+                <div class="metric">
+                    <span>Memory Usage:</span>
+                    <span id="memoryUsage">--%</span>
+                </div>
+                <div class="metric">
+                    <span>Threat Level:</span>
+                    <span id="threatLevel">--%</span>
+                </div>
+                <div class="metric">
+                    <span>Connected Clients:</span>
+                    <span id="clientCount">0</span>
+                </div>
+                <div class="metric">
+                    <span>System Mode:</span>
+                    <span id="systemMode">SIMPLE</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>🎮 Quick Commands</h3>
+                <div style="display: grid; gap: 10px;">
+                    <input type="text" id="commandInput" placeholder="Type command here..." style="padding: 10px; background: #0f0f1a; border: 1px solid #2d2d4d; color: white; border-radius: 5px;">
+                    <button onclick="sendCommand()">🚀 Send Command</button>
+                </div>
+                <div id="commandResponse" style="margin-top: 15px; padding: 10px; background: #0f0f1a; border-radius: 5px; min-height: 50px; font-family: monospace;"></div>
+            </div>
+        </div>
+        
+        <h3>📝 System Logs</h3>
+        <div class="logs" id="logContainer"></div>
+    </div>
+    
+    <script>
+        const socket = io();
+        let deceptionPanelVisible = false;
+        
+        socket.on('connect', () => {
+            document.getElementById('connection-status').innerHTML = '✅ Connected to Omega Server';
+            socket.emit('get_metrics');
+        });
+        
+        socket.on('disconnect', () => {
+            document.getElementById('connection-status').innerHTML = '❌ Disconnected from Omega Server';
+        });
+        
+        socket.on('metrics_update', (data) => {
+            document.getElementById('cpuUsage').textContent = data.cpu + '%';
+            document.getElementById('memoryUsage').textContent = data.memory + '%';
+            document.getElementById('threatLevel').textContent = data.threat_level + '%';
+            document.getElementById('clientCount').textContent = data.clients;
+            document.getElementById('systemMode').textContent = data.mode;
+            
+            // Update deception stats if available
+            if (data.deception) {
+                document.getElementById('deceptionActive').textContent = data.deception.active ? 'ON' : 'OFF';
+                document.getElementById('deceptionActive').style.color = data.deception.active ? '#4CAF50' : '#f44336';
+                document.getElementById('honeypotsCount').textContent = data.deception.honeypots;
+                document.getElementById('connectionsCount').textContent = data.deception.connections;
+                document.getElementById('attackersCount').textContent = data.deception.attackers || 0;
+            }
+        });
+        
+        socket.on('threat_update', (data) => {
+            addLog(`⚠️ THREAT DETECTED: ${data.threat_score}%`, 'threat-event');
+        });
+        
+        socket.on('scan_update', (data) => {
+            addLog(`🔍 Scan progress: ${data.progress}%`, 'log-entry');
+        });
+        
+        socket.on('scan_complete', (data) => {
+            addLog(`✅ Scan completed successfully`, 'log-entry');
+        });
+        
+        socket.on('command_response', (data) => {
+            document.getElementById('commandResponse').innerHTML = 
+                `<strong>Command:</strong> ${data.command}<br>
+                 <strong>Response:</strong> ${data.response}`;
+            addLog(`💬 Command: ${data.command} → ${data.response}`, 'log-entry');
+        });
+        
+        socket.on('deception_event', (data) => {
+            addLog(`🕵️ Deception: ${data.source_ip} → ${data.details}`, 'deception-event');
+        });
+        
+        socket.on('deception_update', (data) => {
+            addLog(`🕵️ Deception Engine: ${data.status} at ${data.level} level`, 'deception-event');
+        });
+        
+        socket.on('honeypot_deployed', (data) => {
+            addLog(`🕵️ Honeypot deployed: ${data.name} on port ${data.port}`, 'deception-event');
+        });
+        
+        function addLog(message, className) {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = className;
+            logEntry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function simulateThreat() {
+            fetch('/api/threat/simulate', { method: 'POST' });
+            addLog('⚠️ Simulating threat scenario...', 'log-entry');
+        }
+        
+        function startScan() {
+            fetch('/api/scan', { method: 'POST' });
+            addLog('🔍 Starting network scan...', 'log-entry');
+        }
+        
+        function toggleMode() {
+            const currentMode = document.getElementById('systemMode').textContent;
+            const newMode = currentMode === 'SIMPLE' ? 'ADVANCED' : 'SIMPLE';
+            fetch('/api/switch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: newMode })
+            });
+            addLog(`🔄 Switching to ${newMode} mode...`, 'log-entry');
+        }
+        
+        function toggleDeceptionPanel() {
+            deceptionPanelVisible = !deceptionPanelVisible;
+            document.getElementById('deceptionPanel').style.display = deceptionPanelVisible ? 'block' : 'none';
+        }
+        
+        function startDeception(level) {
+            fetch('/api/deception/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ level: level })
+            });
+            addLog(`🕵️ Starting deception at ${level} level...`, 'deception-event');
+        }
+        
+        function stopDeception() {
+            fetch('/api/deception/stop', { method: 'POST' });
+            addLog('🕵️ Stopping deception engine...', 'deception-event');
+        }
+        
+        function deployHoneypot(type) {
+            fetch('/api/deception/deploy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: type })
+            });
+            addLog(`🕵️ Deploying ${type} honeypot...`, 'deception-event');
+        }
+        
+        function sendCommand() {
+            const input = document.getElementById('commandInput');
+            const command = input.value.trim();
+            if (command) {
+                socket.emit('send_command', { command: command });
+                input.value = '';
+            }
+        }
+        
+        // Allow Enter key to send command
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendCommand();
+            }
+        });
+        
+        // Initialize
+        addLog('🚀 Omega Command Center initialized', 'log-entry');
+        setInterval(() => {
+            socket.emit('get_metrics');
+        }, 2000);
+    </script>
+</body>
+</html>
+

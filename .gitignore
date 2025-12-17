@@ -1,0 +1,166 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+omega_env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+omega_platform.log
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.bak
+*.backup
+backup/
+archive/
+backup_pre_architecture_migration/
+archive_old_versions/
+
+# Database
+*.db
+*.sqlite
+
+# ML Models (except our trained model)
+!omega_platform/modules/prediction/threat_model.pkl
+*.pkl
+*.joblib
+*.h5
+*.keras
+
+# Temporary files
+tmp/
+temp/
+
+# Documentation
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# Security
+secrets.txt
+api_keys.txt
+credentials.json
+
+# Performance
+profile/
+prof/
+
+# Archive old versions
+archive_old_versions/
+
+# Patch files
+*.patch
+*.rej
+*.orig
+
+# Test files
+test_*.py
+
+# Old scripts
+CLEANUP_LEGACY.sh
+start_*.sh
+test_*.sh
+
+# Legacy files (already in tracking but should be ignored if recreated)
+action_registry.py
+autonomous_response.py
+deception_engine.py
+deception_response_integration.py
+final_verification.py
+integrate_phase_2g.patch
+integrate_phase_2g_simple.py
+integrate_tutorial_patch.py
+integrate_tutorial_with_omega.py
+metasploit_wrapper.py
+minimal_command_center.py
+mobile_optimizer.py
+nmap_integration.py
+omega_command_center.py
+omega_command_center_fixed.py
+omega_complete.py
+omega_complete_fixed.py
+omega_core.py
+omega_final_backup.py
+omega_final_v2e.py
+omega_intelligence.py
+omega_nlp.py
+omega_simple_async.py
+omega_tutorial_demo.py
+omega_tutorial_demo_fixed.py
+omega_v3_integrated.py
+omega_v3_ultimate.py
+omega_v4_phase_2g_final.py
+omega_v4_tutorial.py
+omega_v4_tutorial_final.py
+omega_v4_tutorial_final.py.orig
+omega_v4_tutorial_final.py.rej
+omega_v4_tutorial_fixed.py
+omega_v4_tutorial_working.py
+omega_v4_with_phase_2g.py
+omega_websocket_8081.py
+simple_mobile_optimizer.py
+test_8081.py
+test_intelligence.py
+test_omega.py
+test_phase_2g_minimal.py
+test_tutorial_simple.py
+test_voice.py
+tutorial_engine.py
+tutorial_integration.py
+wifite_integration.py

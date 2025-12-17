@@ -1,0 +1,50 @@
+{
+    "deception_engine": {
+        "default_level": "MEDIUM",
+        "auto_start": false,
+        "log_retention_days": 30,
+        "alert_on_scan": true,
+        "email_alerts": false,
+        "honeypots": {
+            "fake_ssh": {
+                "enabled": true,
+                "port": 2222,
+                "banner": "SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.1",
+                "log_auth_attempts": true
+            },
+            "fake_web": {
+                "enabled": true,
+                "port": 8088,
+                "template": "fake_admin_panel.html",
+                "response_delay": 0
+            },
+            "fake_db": {
+                "enabled": true,
+                "port": 3307,
+                "banner": "5.7.35 MySQL Community Server",
+                "fake_databases": ["customers", "users", "financial"]
+            },
+            "fake_ftp": {
+                "enabled": false,
+                "port": 2121,
+                "banner": "220 FTP Server ready"
+            },
+            "fake_api": {
+                "enabled": true,
+                "port": 3000,
+                "response_json": true
+            }
+        },
+        "analysis": {
+            "detect_scanners": true,
+            "scan_threshold": 5,
+            "ip_blacklist": [],
+            "ip_whitelist": ["127.0.0.1"]
+        },
+        "integration": {
+            "send_to_threat_prediction": true,
+            "trigger_alerts": true,
+            "update_dashboard": true
+        }
+    }
+}

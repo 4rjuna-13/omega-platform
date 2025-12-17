@@ -1,0 +1,40 @@
+{
+  "id": "ransomware_business",
+  "name": "Business Ransomware Attack",
+  "description": "Simulates ransomware targeting business critical systems",
+  "difficulty": "medium",
+  "estimated_time": 900,
+  "tags": ["ransomware", "business", "encryption", "recovery"],
+  "steps": [
+    {
+      "type": "delivery",
+      "method": "malvertising",
+      "target": "employee_workstations"
+    },
+    {
+      "type": "execution",
+      "technique": "powershell_script",
+      "bypass": "amsi"
+    },
+    {
+      "type": "discovery",
+      "actions": ["network_shares", "backup_systems", "critical_servers"]
+    },
+    {
+      "type": "lateral_movement",
+      "method": "worm_capability",
+      "propagation_speed": "fast"
+    },
+    {
+      "type": "encryption",
+      "targets": ["network_shares", "database_servers", "backup_repositories"],
+      "algorithm": "aes_256",
+      "ransom_note": true
+    },
+    {
+      "type": "command_control",
+      "method": "tor_network",
+      "communication": "encrypted"
+    }
+  ]
+}

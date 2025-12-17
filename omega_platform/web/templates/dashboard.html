@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omega Platform - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #0f172a; color: #f1f5f9; font-family: system-ui, sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        .btn { background: #3b82f6; color: white; padding: 10px 20px; border-radius: 8px; }
+        .btn:hover { background: #2563eb; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">
+                        <i class="fas fa-shield-alt text-blue-400 mr-3"></i>
+                        Omega Platform v3.0
+                    </h1>
+                    <p class="text-gray-400 mt-2">Threat Simulation Dashboard</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="px-4 py-2 bg-green-900/30 text-green-300 rounded-full">
+                        <i class="fas fa-circle text-green-400 mr-2"></i>
+                        Operational
+                    </div>
+                    <button onclick="refreshData()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Detection Rate</p>
+                        <p id="detection-rate" class="text-3xl font-bold text-white">87.5%</p>
+                    </div>
+                    <i class="fas fa-bullseye text-green-400 text-2xl"></i>
+                </div>
+            </div>
+            
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Response Time</p>
+                        <p id="response-time" class="text-3xl font-bold text-white">2.3s</p>
+                    </div>
+                    <i class="fas fa-clock text-blue-400 text-2xl"></i>
+                </div>
+            </div>
+            
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Honeypot Int.</p>
+                        <p id="honeypot-int" class="text-3xl font-bold text-white">142</p>
+                    </div>
+                    <i class="fas fa-bug text-yellow-400 text-2xl"></i>
+                </div>
+            </div>
+            
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Active Sims</p>
+                        <p id="active-sims" class="text-3xl font-bold text-white">2</p>
+                    </div>
+                    <i class="fas fa-running text-purple-400 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Scenarios -->
+            <div class="lg:col-span-2">
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-white mb-6">
+                        <i class="fas fa-play-circle mr-3"></i>
+                        Simulation Scenarios
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="scenarios">
+                        <!-- Scenarios loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div>
+                <div class="card p-6 mb-6">
+                    <h2 class="text-xl font-bold text-white mb-6">
+                        <i class="fas fa-bolt mr-3"></i>
+                        Quick Actions
+                    </h2>
+                    <div class="space-y-4">
+                        <button onclick="runSimulation('apt')" class="w-full btn">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Run APT Simulation
+                        </button>
+                        <button onclick="runSimulation('ransomware')" class="w-full btn" style="background: #dc2626;">
+                            <i class="fas fa-virus mr-2"></i>
+                            Test Ransomware
+                        </button>
+                        <button onclick="testApi()" class="w-full btn" style="background: #059669;">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Test API
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-white mb-6">
+                        <i class="fas fa-info-circle mr-3"></i>
+                        System Info
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Version</span>
+                            <span class="text-white font-mono">3.0.0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Mode</span>
+                            <span class="text-yellow-300 font-mono">Demo</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">API Status</span>
+                            <span id="api-status" class="text-green-300">Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
+            <p>Omega Platform • Phase 3 Complete • Threat Simulation Dashboard</p>
+            <p class="mt-2">Ready for predictive threat modeling integration</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScenarios();
+            loadMetrics();
+            checkApi();
+        });
+
+        // Load scenarios
+        async function loadScenarios() {
+            try {
+                const res = await fetch('/api/scenarios');
+                const scenarios = await res.json();
+                
+                const container = document.getElementById('scenarios');
+                container.innerHTML = '';
+                
+                scenarios.forEach(scenario => {
+                    const difficultyColor = {
+                        'easy': 'text-green-400',
+                        'medium': 'text-yellow-400',
+                        'hard': 'text-orange-400',
+                        'advanced': 'text-red-400'
+                    }[scenario.difficulty] || 'text-gray-400';
+                    
+                    const card = `
+                        <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-bold text-white">${scenario.name}</h3>
+                                <span class="px-2 py-1 text-xs rounded ${difficultyColor} bg-gray-900">
+                                    ${scenario.difficulty}
+                                </span>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4">
+                                ${getDescription(scenario.id)}
+                            </p>
+                            <button onclick="runSimulation('${scenario.id}')" 
+                                    class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white">
+                                Run Simulation
+                            </button>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            } catch (error) {
+                console.error('Failed to load scenarios:', error);
+            }
+        }
+
+        function getDescription(id) {
+            const desc = {
+                'apt': 'Advanced Persistent Threat simulation',
+                'ransomware': 'Ransomware encryption attack test',
+                'insider': 'Insider threat detection simulation',
+                'phishing': 'Phishing campaign effectiveness test'
+            };
+            return desc[id] || 'Threat simulation scenario';
+        }
+
+        // Load metrics
+        async function loadMetrics() {
+            try {
+                const res = await fetch('/api/metrics');
+                const data = await res.json();
+                
+                document.getElementById('detection-rate').textContent = data.detection_rate + '%';
+                document.getElementById('response-time').textContent = data.response_time;
+                document.getElementById('honeypot-int').textContent = data.honeypot_interactions;
+                document.getElementById('active-sims').textContent = data.active_simulations;
+            } catch (error) {
+                console.error('Failed to load metrics:', error);
+            }
+        }
+
+        // Check API
+        async function checkApi() {
+            try {
+                await fetch('/api/health');
+                document.getElementById('api-status').textContent = 'Online';
+                document.getElementById('api-status').className = 'text-green-300';
+            } catch (error) {
+                document.getElementById('api-status').textContent = 'Offline';
+                document.getElementById('api-status').className = 'text-red-300';
+            }
+        }
+
+        // Run simulation
+        async function runSimulation(scenarioId) {
+            try {
+                const res = await fetch('/api/simulation/run', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({scenario: scenarioId})
+                });
+                
+                const data = await res.json();
+                alert(`✅ ${data.message}`);
+                loadMetrics(); // Refresh metrics
+            } catch (error) {
+                alert('❌ Failed to run simulation');
+            }
+        }
+
+        // Test API
+        async function testApi() {
+            try {
+                const [statusRes, healthRes, scenariosRes] = await Promise.all([
+                    fetch('/api/status'),
+                    fetch('/api/health'),
+                    fetch('/api/scenarios')
+                ]);
+                
+                alert(`✅ API Tests Passed!\nStatus: ${statusRes.status}\nHealth: ${healthRes.status}\nScenarios: ${scenariosRes.status}`);
+            } catch (error) {
+                alert('❌ API Test Failed');
+            }
+        }
+
+        // Refresh all data
+        function refreshData() {
+            loadScenarios();
+            loadMetrics();
+            checkApi();
+            alert('Data refreshed');
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadMetrics, 30000);
+    </script>
+</body>
+</html>
