@@ -1,0 +1,139 @@
+{
+  "generated_at": "2025-12-17T15:42:16.993935",
+  "summary": {
+    "total_indicators": 4,
+    "total_alerts": 3,
+    "recent_indicators": 4,
+    "mitre_coverage": 6
+  },
+  "breakdowns": {
+    "by_severity": {
+      "high": 3,
+      "medium": 1
+    },
+    "by_source": {
+      "threat_modeling": 1,
+      "purple_team": 1,
+      "lotl_simulator": 1,
+      "deception_tech": 1
+    }
+  },
+  "recent_alerts": [
+    {
+      "id": "3bb38e00-9d82-491b-bf20-ee480c6fbde4",
+      "timestamp": "2025-12-17T15:42:16.993799",
+      "severity": "high",
+      "title": "High Risk: Healthcare Threat Model",
+      "source": "Threat Modeler",
+      "description": "Risk score: 8.2/10"
+    },
+    {
+      "id": "b76d0472-3e0b-48bb-ac6f-b1e954830a55",
+      "timestamp": "2025-12-17T15:42:16.993862",
+      "severity": "medium",
+      "title": "Exercise Complete: Ransomware Response",
+      "source": "Purple Team",
+      "description": "Team size: 6, Findings: 2"
+    },
+    {
+      "id": "068f8cfa-6fd7-4e50-a6a4-265abf85c88b",
+      "timestamp": "2025-12-17T15:42:16.993893",
+      "severity": "high",
+      "title": "Deception System Activity",
+      "source": "Deception Tech",
+      "description": "9 engagement(s) detected"
+    }
+  ],
+  "recent_indicators": [
+    {
+      "id": "67d7814f-f337-45f2-bbd9-9b15ff2f8708",
+      "type": "threat_model",
+      "value": "Threat Model: Healthcare",
+      "severity": "high",
+      "source": "threat_modeling",
+      "first_seen": "2025-12-17T15:42:16.993778",
+      "last_seen": "2025-12-17T15:42:16.993787",
+      "confidence": 0.8,
+      "metadata": {
+        "industry": "Healthcare",
+        "vulnerabilities": 18,
+        "risk_score": 8.2,
+        "mitre_techniques": [
+          "T1059",
+          "T1566",
+          "T1027",
+          "T1486"
+        ]
+      }
+    },
+    {
+      "id": "126cb7d0-97e5-4a6c-8c0c-239fb90bd2c5",
+      "type": "purple_team",
+      "value": "Exercise: Ransomware Response",
+      "severity": "medium",
+      "source": "purple_team",
+      "first_seen": "2025-12-17T15:42:16.993849",
+      "last_seen": "2025-12-17T15:42:16.993850",
+      "confidence": 0.8,
+      "metadata": {
+        "exercise": "Ransomware Response",
+        "team_size": 6,
+        "findings": [
+          "Slow detection time",
+          "Poor containment"
+        ],
+        "mitre_techniques": [
+          "T1486",
+          "T1490"
+        ]
+      }
+    },
+    {
+      "id": "49bd07bf-175b-4a7a-982c-f97aac2808aa",
+      "type": "lotl_technique",
+      "value": "LotL: PowerShell Empire",
+      "severity": "high",
+      "source": "lotl_simulator",
+      "first_seen": "2025-12-17T15:42:16.993877",
+      "last_seen": "2025-12-17T15:42:16.993877",
+      "confidence": 0.8,
+      "metadata": {
+        "technique": "PowerShell Empire",
+        "risk": "high",
+        "mitre": "T1059.001",
+        "platform": "Windows"
+      }
+    },
+    {
+      "id": "a7f09716-0e66-45ed-b7f4-53d63875e977",
+      "type": "deception",
+      "value": "Deception Engagements: 9",
+      "severity": "high",
+      "source": "deception_tech",
+      "first_seen": "2025-12-17T15:42:16.993886",
+      "last_seen": "2025-12-17T15:42:16.993886",
+      "confidence": 0.8,
+      "metadata": {
+        "honeypots": 3,
+        "tokens": 12,
+        "engagements": 9,
+        "watermarks_detected": 2
+      }
+    }
+  ],
+  "mitre_techniques": [
+    "T1490",
+    "T1059.001",
+    "T1486",
+    "T1027",
+    "T1566",
+    "T1059"
+  ],
+  "recommendations": [
+    {
+      "priority": "medium",
+      "action": "Investigate deception system alerts",
+      "details": "1 potential intrusion attempts detected"
+    }
+  ]
+}
