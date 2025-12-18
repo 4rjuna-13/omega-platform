@@ -1,487 +1,200 @@
 #!/usr/bin/env python3
 """
-Simplified Threat Intelligence Dashboard
-No external dependencies beyond standard library
+Simple Threat Dashboard for JAIDA-OMEGA-SAIOS
+Provides basic threat visualization and reporting
 """
 
 import json
-import uuid
+import time
 from datetime import datetime, timedelta
+from typing import Dict, List, Any, Optional
 import random
-from collections import defaultdict
-from enum import Enum
-from typing import Dict, List, Any
-import sys
 
-class DataSource(Enum):
-    THREAT_MODELING = "threat_modeling"
-    PURPLE_TEAM = "purple_team"
-    LOTL_SIMULATOR = "lotl_simulator"
-    DECEPTION_TECH = "deception_tech"
 
-class ThreatSeverity(Enum):
-    INFO = "info"
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
-
-class ThreatIndicator:
-    def __init__(self, indicator_type: str, value: str, severity: ThreatSeverity, 
-                 source: DataSource, metadata: Dict = None):
-        self.id = str(uuid.uuid4())
-        self.type = indicator_type
-        self.value = value
-        self.severity = severity
-        self.source = source
-        self.first_seen = datetime.now()
-        self.last_seen = datetime.now()
-        self.confidence = 0.8
-        self.metadata = metadata or {}
+class ThreatDashboard:
+    """Simple threat dashboard for visualizing security data"""
     
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "type": self.type,
-            "value": self.value,
-            "severity": self.severity.value,
-            "source": self.source.value,
-            "first_seen": self.first_seen.isoformat(),
-            "last_seen": self.last_seen.isoformat(),
-            "confidence": self.confidence,
-            "metadata": self.metadata
-        }
-
-class SimpleDashboard:
     def __init__(self):
-        self.indicators = []
-        self.alerts = []
+        self.iocs = []  # Indicator of Compromise storage
+        self.threat_levels = ["Low", "Medium", "High", "Critical"]
+        self._generate_sample_data()
     
-    def add_sample_data(self):
-        """Add sample data for demonstration"""
-        
-        # Threat modeling data
-        self.add_threat_modeling({
-            "industry": "Healthcare",
-            "vulnerabilities": 18,
-            "risk_score": 8.2,
-            "mitre_techniques": ["T1059", "T1566", "T1027", "T1486"]
-        })
-        
-        # Purple team data
-        self.add_purple_team({
-            "exercise": "Ransomware Response",
-            "team_size": 6,
-            "findings": ["Slow detection time", "Poor containment"],
-            "mitre_techniques": ["T1486", "T1490"]
-        })
-        
-        # LotL data
-        self.add_lotl({
-            "technique": "PowerShell Empire",
-            "risk": "high",
-            "mitre": "T1059.001",
-            "platform": "Windows"
-        })
-        
-        # Deception data
-        self.add_deception({
-            "honeypots": 3,
-            "tokens": 12,
-            "engagements": 9,
-            "watermarks_detected": 2
-        })
-    
-    def add_threat_modeling(self, data: Dict):
-        indicator = ThreatIndicator(
-            "threat_model",
-            f"Threat Model: {data.get('industry')}",
-            ThreatSeverity.HIGH if data.get('risk_score', 0) > 7 else ThreatSeverity.MEDIUM,
-            DataSource.THREAT_MODELING,
-            data
-        )
-        self.indicators.append(indicator)
-        
-        # Create alert for high risk
-        if data.get('risk_score', 0) > 7:
-            self.alerts.append({
-                "id": str(uuid.uuid4()),
-                "timestamp": datetime.now().isoformat(),
-                "severity": "high",
-                "title": f"High Risk: {data.get('industry')} Threat Model",
-                "source": "Threat Modeler",
-                "description": f"Risk score: {data.get('risk_score')}/10"
-            })
-    
-    def add_purple_team(self, data: Dict):
-        indicator = ThreatIndicator(
-            "purple_team",
-            f"Exercise: {data.get('exercise')}",
-            ThreatSeverity.MEDIUM,
-            DataSource.PURPLE_TEAM,
-            data
-        )
-        self.indicators.append(indicator)
-        
-        self.alerts.append({
-            "id": str(uuid.uuid4()),
-            "timestamp": datetime.now().isoformat(),
-            "severity": "medium",
-            "title": f"Exercise Complete: {data.get('exercise')}",
-            "source": "Purple Team",
-            "description": f"Team size: {data.get('team_size')}, Findings: {(len(data.get('findings')) if isinstance(data.get('findings'), (list, tuple)) else 0)}"
-        })
-    
-    def add_lotl(self, data: Dict):
-        indicator = ThreatIndicator(
-            "lotl_technique",
-            f"LotL: {data.get('technique')}",
-            ThreatSeverity.HIGH if data.get('risk') == 'high' else ThreatSeverity.MEDIUM,
-            DataSource.LOTL_SIMULATOR,
-            data
-        )
-        self.indicators.append(indicator)
-    
-    def add_deception(self, data: Dict):
-        engagements = data.get('engagements', 0)
-        if engagements > 0:
-            indicator = ThreatIndicator(
-                "deception",
-                f"Deception Engagements: {engagements}",
-                ThreatSeverity.HIGH if engagements > 5 else ThreatSeverity.MEDIUM,
-                DataSource.DECEPTION_TECH,
-                data
-            )
-            self.indicators.append(indicator)
-            
-            self.alerts.append({
-                "id": str(uuid.uuid4()),
-                "timestamp": datetime.now().isoformat(),
-                "severity": "high" if engagements > 5 else "medium",
-                "title": "Deception System Activity",
-                "source": "Deception Tech",
-                "description": f"{engagements} engagement(s) detected"
-            })
-    
-    def generate_report(self) -> Dict:
-        """Generate comprehensive report"""
-        
-        # Calculate statistics
-        severity_counts = defaultdict(int)
-        source_counts = defaultdict(int)
-        
-        for indicator in self.indicators:
-            severity_counts[indicator.severity.value] += 1
-            source_counts[indicator.source.value] += 1
-        
-        # Recent indicators (last 24 hours)
-        recent_cutoff = datetime.now() - timedelta(hours=24)
-        recent_indicators = [
-            i for i in self.indicators 
-            if i.last_seen > recent_cutoff
+    def _generate_sample_data(self):
+        """Generate sample IOC data for demonstration"""
+        sample_iocs = [
+            {
+                "id": f"IOC-{i:04d}",
+                "type": random.choice(["ip", "domain", "hash", "url"]),
+                "value": self._generate_ioc_value(),
+                "source": random.choice(["OMEGA Crawler", "JAIDA Intel", "External Feed"]),
+                "confidence": random.randint(50, 100),
+                "first_seen": (datetime.now() - timedelta(hours=random.randint(1, 72))).isoformat(),
+                "last_seen": datetime.now().isoformat(),
+                "severity": random.choice(["Low", "Medium", "High"])
+            }
+            for i in range(1, 21)
         ]
-        
-        # Extract MITRE techniques
-        mitre_techniques = set()
-        for indicator in self.indicators:
-            if 'mitre_techniques' in indicator.metadata:
-                mitre_techniques.update(indicator.metadata['mitre_techniques'])
-            if 'mitre' in indicator.metadata:
-                mitre_value = indicator.metadata['mitre']
-                if isinstance(mitre_value, str):
-                    mitre_techniques.add(mitre_value)
-        
-        report = {
-            "generated_at": datetime.now().isoformat(),
-            "summary": {
-                "total_indicators": len(self.indicators),
-                "total_alerts": len(self.alerts),
-                "recent_indicators": len(recent_indicators),
-                "mitre_coverage": len(mitre_techniques)
-            },
-            "breakdowns": {
-                "by_severity": dict(severity_counts),
-                "by_source": dict(source_counts)
-            },
-            "recent_alerts": self.alerts[-5:] if self.alerts else [],
-            "recent_indicators": [i.to_dict() for i in recent_indicators[-5:]],
-            "mitre_techniques": list(mitre_techniques),
-            "recommendations": self._generate_recommendations()
-        }
-        
-        return report
+        self.iocs = sample_iocs
     
-    def _generate_recommendations(self) -> List[Dict]:
-        """Generate actionable recommendations"""
+    def _generate_ioc_value(self) -> str:
+        """Generate a sample IOC value"""
+        ioc_type = random.choice(["ip", "domain", "hash", "url"])
+        
+        if ioc_type == "ip":
+            return f"{random.randint(1,255)}.{random.randint(1,255)}.{random.randint(1,255)}.{random.randint(1,255)}"
+        elif ioc_type == "domain":
+            domains = ["malicious.com", "phishing-site.net", "c2-server.org", "exploit-kit.io"]
+            return random.choice(domains)
+        elif ioc_type == "hash":
+            import hashlib
+            return hashlib.md5(str(time.time()).encode()).hexdigest()
+        else:  # url
+            return f"https://{random.choice(['evil', 'malware', 'phish', 'attack'])}.com/{random.choice(['payload', 'exploit', 'loader', 'c2'])}.exe"
+    
+    def generate_report(self) -> Dict[str, Any]:
+        """Generate a comprehensive threat report"""
+        # Calculate statistics
+        recent_iocs = [ioc for ioc in self.iocs if ioc.get("severity") in ["High", "Critical"]]
+        
+        # Count by type
+        type_counts = {}
+        severity_counts = {}
+        
+        for ioc in self.iocs:
+            ioc_type = ioc.get("type", "unknown")
+            severity = ioc.get("severity", "unknown")
+            
+            type_counts[ioc_type] = type_counts.get(ioc_type, 0) + 1
+            severity_counts[severity] = severity_counts.get(severity, 0) + 1
+        
+        # Determine overall threat level
+        if severity_counts.get("Critical", 0) > 0:
+            threat_level = "Critical"
+        elif severity_counts.get("High", 0) > 3:
+            threat_level = "High"
+        elif severity_counts.get("Medium", 0) > 5:
+            threat_level = "Medium"
+        else:
+            threat_level = "Low"
+        
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "threat_level": threat_level,
+            "total_iocs": len(self.iocs),
+            "recent_iocs": recent_iocs[:10],  # Top 10 recent high/critical IOCs
+            "type_distribution": type_counts,
+            "severity_distribution": severity_counts,
+            "top_sources": self._get_top_sources(),
+            "recommendations": self._generate_recommendations(threat_level, severity_counts)
+        }
+    
+    def _get_top_sources(self) -> List[Dict[str, Any]]:
+        """Get top IOC sources"""
+        source_counts = {}
+        
+        for ioc in self.iocs:
+            source = ioc.get("source", "Unknown")
+            source_counts[source] = source_counts.get(source, 0) + 1
+        
+        # Convert to list of dicts
+        return [
+            {"source": source, "count": count}
+            for source, count in sorted(source_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+        ]
+    
+    def _generate_recommendations(self, threat_level: str, severity_counts: Dict) -> List[str]:
+        """Generate recommendations based on threat level"""
         recommendations = []
         
-        # High severity indicators
-        high_critical = sum(
-            1 for i in self.indicators 
-            if i.severity in [ThreatSeverity.HIGH, ThreatSeverity.CRITICAL]
-        )
+        if threat_level in ["Critical", "High"]:
+            recommendations.extend([
+                "Immediate review of critical IOCs",
+                "Isolate affected systems",
+                "Increase monitoring on perimeter devices",
+                "Notify incident response team"
+            ])
         
-        if high_critical > 3:
-            recommendations.append({
-                "priority": "high",
-                "action": "Address high/critical severity threats",
-                "details": f"{high_critical} high/critical indicators require immediate attention"
-            })
+        if severity_counts.get("High", 0) > 0:
+            recommendations.extend([
+                "Review firewall rules for IOCs",
+                "Check SIEM for related alerts",
+                "Update threat intelligence feeds"
+            ])
         
-        # Check for deception engagements
-        deception_engagements = sum(
-            1 for i in self.indicators 
-            if i.type == "deception"
-        )
+        # Always include these
+        recommendations.extend([
+            "Regular IOC database maintenance",
+            "Update signature databases",
+            "Review security device logs"
+        ])
         
-        if deception_engagements > 0:
-            recommendations.append({
-                "priority": "medium",
-                "action": "Investigate deception system alerts",
-                "details": f"{deception_engagements} potential intrusion attempts detected"
-            })
-        
-        # Check threat modeling coverage
-        threat_models = sum(
-            1 for i in self.indicators 
-            if i.source == DataSource.THREAT_MODELING
-        )
-        
-        if threat_models == 0:
-            recommendations.append({
-                "priority": "medium",
-                "action": "Conduct threat modeling assessment",
-                "details": "No threat modeling data available"
-            })
-        
-        return recommendations
+        return recommendations[:6]  # Return top 6 recommendations
     
-    def display_console_dashboard(self):
-        """Display dashboard in console"""
+    def add_ioc(self, ioc_data: Dict[str, Any]) -> str:
+        """Add a new IOC to the dashboard"""
+        ioc_id = f"IOC-{len(self.iocs) + 1:04d}"
         
-        report = self.generate_report()
+        ioc_data["id"] = ioc_id
+        ioc_data["first_seen"] = ioc_data.get("first_seen", datetime.now().isoformat())
+        ioc_data["last_seen"] = datetime.now().isoformat()
         
-        print("\n" + "="*60)
-        print("🚀 OMEGA PLATFORM - THREAT INTELLIGENCE DASHBOARD")
-        print("="*60)
+        self.iocs.append(ioc_data)
+        return ioc_id
+    
+    def get_ioc_by_id(self, ioc_id: str) -> Optional[Dict[str, Any]]:
+        """Get IOC by ID"""
+        for ioc in self.iocs:
+            if ioc.get("id") == ioc_id:
+                return ioc
+        return None
+    
+    def search_iocs(self, query: str) -> List[Dict[str, Any]]:
+        """Search IOCs by value, type, or source"""
+        query = query.lower()
+        results = []
         
-        print(f"\n📊 EXECUTIVE SUMMARY")
-        print(f"   Generated: {report['generated_at'][11:19]}")
-        print(f"   Total Indicators: {report['summary']['total_indicators']}")
-        print(f"   Active Alerts: {report['summary']['total_alerts']}")
-        print(f"   Recent Activity (24h): {report['summary']['recent_indicators']}")
-        print(f"   MITRE ATT&CK Coverage: {report['summary']['mitre_coverage']}")
+        for ioc in self.iocs:
+            if (query in ioc.get("value", "").lower() or
+                query in ioc.get("type", "").lower() or
+                query in ioc.get("source", "").lower() or
+                query in ioc.get("severity", "").lower()):
+                results.append(ioc)
         
-        print(f"\n⚠️  THREAT SEVERITY")
-        severity_icons = {
-            'critical': '🔴',
-            'high': '🟠',
-            'medium': '🟡', 
-            'low': '🟢',
-            'info': '🔵'
-        }
-        
-        for severity, count in report['breakdowns']['by_severity'].items():
-            icon = severity_icons.get(severity, '⚪')
-            print(f"   {icon} {severity.upper():10} {count:3} indicators")
-        
-        print(f"\n📡 DATA SOURCES")
-        source_icons = {
-            'threat_modeling': '🎯',
-            'purple_team': '👥',
-            'lotl_simulator': '🛠️',
-            'deception_tech': '🎣'
-        }
-        
-        for source, count in report['breakdowns']['by_source'].items():
-            icon = source_icons.get(source, '📊')
-            source_name = source.replace('_', ' ').title()
-            print(f"   {icon} {source_name:20} {count:3} indicators")
-        
-        print(f"\n🚨 RECENT ALERTS")
-        if report['recent_alerts']:
-            for alert in report['recent_alerts']:
-                severity = alert.get('severity', 'info')
-                icon = severity_icons.get(severity, '⚪')
-                print(f"   {icon} [{severity.upper()}] {alert.get('title', 'Unknown')}")
-                print(f"     Source: {alert.get('source', 'Unknown')}")
-        else:
-            print("   No recent alerts")
-        
-        print(f"\n🎯 MITRE ATT&CK DETECTED")
-        if report['mitre_techniques']:
-            techniques = ', '.join(report['mitre_techniques'][:8])
-            print(f"   {techniques}")
-            if len(report['mitre_techniques']) > 8:
-                print(f"   ... and {len(report['mitre_techniques']) - 8} more")
-        else:
-            print("   No MITRE techniques detected")
-        
-        print(f"\n💡 RECOMMENDATIONS")
-        if report['recommendations']:
-            for rec in report['recommendations']:
-                priority = rec.get('priority', 'medium')
-                priority_icon = {
-                    'high': '🔴',
-                    'medium': '🟡',
-                    'low': '🟢'
-                }.get(priority, '⚪')
-                print(f"   {priority_icon} [{priority.upper()}] {rec.get('action', 'Unknown')}")
-        else:
-            print("   No recommendations at this time")
-        
-        print(f"\n" + "="*60)
-        print("📈 NEXT STEPS:")
-        print("   1. Review high severity threats")
-        print("   2. Investigate deception engagements")
-        print("   3. Update detection rules")
-        print("   4. Schedule purple team exercises")
-        print("="*60)
-        
-        return report
+        return results
 
-def demonstrate():
-    """Run dashboard demonstration"""
-    print("Starting Omega Platform Threat Intelligence Dashboard...")
-    
-    dashboard = SimpleDashboard()
-    
-    print("\n📥 Loading sample data from all components...")
-    dashboard.add_sample_data()
-    
-    print("\n📈 Generating dashboard report...")
-    report = dashboard.display_console_dashboard()
-    
-    # Save report
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    report_file = f"threat_dashboard_{timestamp}.json"
-    
-    with open(report_file, 'w') as f:
-        json.dump(report, f, indent=2)
-    
-    print(f"\n💾 Report saved to: {report_file}")
-    
-    # Generate simple HTML
-    html_file = f"threat_dashboard_{timestamp}.html"
-    with open(html_file, 'w') as f:
-        f.write(generate_html_report(report))
-    
-    print(f"📄 HTML report saved to: {html_file}")
-    
-    return dashboard, report
 
-def generate_html_report(report: Dict) -> str:
-    """Generate simple HTML report"""
+def test_dashboard():
+    """Test the threat dashboard"""
+    print("🧪 Testing Threat Dashboard...")
     
-    html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <title>Omega Platform - Threat Dashboard</title>
-    <style>
-        body {{ font-family: Arial, sans-serif; margin: 20px; }}
-        .container {{ max-width: 1000px; margin: 0 auto; }}
-        .header {{ text-align: center; margin-bottom: 30px; }}
-        .metric {{ display: inline-block; width: 200px; margin: 10px; padding: 15px; background: #f0f0f0; border-radius: 5px; text-align: center; }}
-        .metric-value {{ font-size: 2em; font-weight: bold; color: #007acc; }}
-        .severity {{ padding: 3px 8px; border-radius: 3px; margin: 2px; display: inline-block; }}
-        .critical {{ background: #dc3545; color: white; }}
-        .high {{ background: #fd7e14; color: white; }}
-        .medium {{ background: #ffc107; }}
-        .low {{ background: #28a745; color: white; }}
-        .info {{ background: #17a2b8; color: white; }}
-        table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-        th, td {{ padding: 10px; border: 1px solid #ddd; text-align: left; }}
-        th {{ background: #007acc; color: white; }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Omega Platform - Threat Intelligence Dashboard</h1>
-            <p>Generated: {report['generated_at']}</p>
-        </div>
-        
-        <div style="text-align: center;">
-            <div class="metric">
-                <div>Total Indicators</div>
-                <div class="metric-value">{report['summary']['total_indicators']}</div>
-            </div>
-            <div class="metric">
-                <div>Active Alerts</div>
-                <div class="metric-value">{report['summary']['total_alerts']}</div>
-            </div>
-            <div class="metric">
-                <div>Recent Activity</div>
-                <div class="metric-value">{report['summary']['recent_indicators']}</div>
-            </div>
-            <div class="metric">
-                <div>MITRE Coverage</div>
-                <div class="metric-value">{report['summary']['mitre_coverage']}</div>
-            </div>
-        </div>
-        
-        <h2>Threat Severity Breakdown</h2>
-"""
+    dashboard = ThreatDashboard()
     
-    # Add severity breakdown
-    for severity, count in report['breakdowns']['by_severity'].items():
-        html += f"""
-        <div>
-            <span class="severity {severity}">{severity.upper()}</span>
-            <span>{count} indicators</span>
-        </div>
-"""
+    # Generate report
+    report = dashboard.generate_report()
     
-    html += """
-        <h2>Recent Alerts</h2>
-        <table>
-            <tr><th>Time</th><th>Severity</th><th>Title</th><th>Source</th></tr>
-"""
+    print(f"✅ Dashboard generated successfully!")
+    print(f"   Threat Level: {report['threat_level']}")
+    print(f"   Total IOCs: {report['total_iocs']}")
+    print(f"   Recent High/Critical IOCs: {len(report['recent_iocs'])}")
     
-    # Add alerts table
-    for alert in report['recent_alerts']:
-        time_str = alert['timestamp'][11:16] if 'timestamp' in alert else 'N/A'
-        severity = alert.get('severity', 'info')
-        html += f"""
-            <tr>
-                <td>{time_str}</td>
-                <td><span class="severity {severity}">{severity.upper()}</span></td>
-                <td>{alert.get('title', 'Unknown')}</td>
-                <td>{alert.get('source', 'Unknown')}</td>
-            </tr>
-"""
+    # Test adding a new IOC
+    new_ioc = {
+        "type": "ip",
+        "value": "192.168.1.100",
+        "source": "Manual Entry",
+        "confidence": 95,
+        "severity": "High"
+    }
     
-    html += """
-        </table>
-        
-        <h2>Recommendations</h2>
-        <ul>
-"""
+    ioc_id = dashboard.add_ioc(new_ioc)
+    print(f"✅ Added new IOC: {ioc_id}")
     
-    # Add recommendations
-    for rec in report['recommendations']:
-        priority = rec.get('priority', 'medium')
-        html += f"""
-            <li>
-                <span class="severity {priority}">{priority.upper()}</span>
-                {rec.get('action', 'Unknown')}
-                <br><small>{rec.get('details', '')}</small>
-            </li>
-"""
+    # Test search
+    search_results = dashboard.search_iocs("High")
+    print(f"✅ Found {len(search_results)} high severity IOCs")
     
-    html += """
-        </ul>
-        
-        <div style="text-align: center; margin-top: 40px; color: #666;">
-            <p>Omega Platform - Advanced Security Testing Framework</p>
-            <p>Generated automatically by the threat intelligence system</p>
-        </div>
-    </div>
-</body>
-</html>
-"""
-    
-    return html
+    return True
+
 
 if __name__ == "__main__":
-    demonstrate()
+    test_dashboard()
