@@ -79,3 +79,20 @@ Proprietary - Part of Omega Platform Defense System
 **Generated**: 2025-12-18  
 **Version**: JAIDA v3.0 Phase 1  
 **Status**: 🟢 OPERATIONAL
+
+## 🧩 EXTENDED MODULES
+Beyond the core intelligence engine, JAIDA includes:
+
+### 🔗 API Integrations
+- **External Threat Feeds**: `api_integrations/external_feeds.py`
+
+### 🕷️ Intelligence Crawlers
+- **Bounty Platform Crawler**: Automated bug bounty intelligence
+- **Threat Intel Crawler**: Collects threat data from various sources
+- **Training Material Aggregator**: Gathers security training content
+
+### 📊 Enhanced Reporting
+- **Advanced Visualization**: `reporting/intelligence_reporter.py`
+
+### 🔧 System Integration
+- **Comprehensive Integration Platform**: `system_integrator.py`
