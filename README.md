@@ -1,55 +1,136 @@
-# 🏛️ OMEGA Platform 
-### **JAIDA-OMEGA-SAIOS: Sovereign Hierarchical Intelligence**
+# 🏛️ JAIDA-OMEGA-SAIOS
+## Sovereign AI Threat Intelligence Platform
 
-[![Status](https://img.shields.io/badge/Status-Sovereign_Hierarchy_Active-brightgreen)](#)
-[![Tests](https://img.shields.io/badge/Tests-100%25_Passing-success)](#)
-[![Architecture](https://img.shields.io/badge/Architecture-GC%2FWD_Hierarchy-blue)](#)
-[![Autonomy](https://img.shields.io/badge/Autonomy-Bot_Father_Operational-orange)](#)
+A complete autonomous threat intelligence and cyber-defense platform with 7 integrated modules, persistent data layer, and self-healing capabilities.
 
-> **"Building unchecked sovereign AI with hierarchical persistence."**
+## 🚀 Features
 
-## 🔐 **Sovereign Vision**
+### **Core Architecture**
+- **OmegaNexus**: Central orchestrator with command interface
+- **SovereignDB**: Persistent data layer (SQLite) for bots, threats, operations
+- **AutonomousOps**: Self-healing operations with health checks & optimization
 
-**JAIDA-OMEGA-SAIOS** represents three integrated layers of autonomous intelligence:
+### **Intelligence Modules**
+- **Bot Father System**: Autonomous bot creation and management
+- **Web Crawler System**: Surface/deep/dark web threat intelligence
+- **Deception Technology**: Honeypots, canaries, breadcrumbs
+- **Threat Dashboard**: Real-time threat visualization
 
-1. **SAIOS** - Sovereign Authentic Intelligence Operating System  
-   *Foundation layer with JAI-LSD-25 authenticated execution*
-   
-2. **JAIDA** - Joint Authentic Intelligence Defense & Analytics  
-   *Platform layer with hierarchical bot architecture*
-   
-3. **OMEGA** - Operational Multi-faceted Enhanced Guardian Architecture  
-   *Implementation layer with threat intelligence capabilities*
+### **Sovereign Hierarchy**
+- **GC/WD System**: General Contractor / Worker Drone command structure
+- **Self-Documenting Context**: Automatic state tracking across sessions
+- **100% Test Coverage**: Comprehensive test suite for all components
 
-## 🏗️ **Architecture Overview**
+## 📦 Quick Start
 
-### **Hierarchical Bot System**
+```bash
+# Clone and setup
+git clone https://github.com/4rjuna-13/jaida-omega-saios.git
+cd jaida-omega-saios
 
+# Run the orchestrator
+python3 omega_nexus.py status
 
+# Start autonomous operations
+python3 omega_nexus.py autonomous
+
+# Deploy bot fleet
+python3 omega_nexus.py deploy
+
+# Generate threat intelligence
+python3 omega_nexus.py crawl
+
+# View persistent data
+python3 omega_nexus.py dbstatus
+# Complete the README.md file properly
 cat > README.md << 'EOF'
-# 🏛️ OMEGA Platform 
-### **JAIDA-OMEGA-SAIOS: Sovereign Hierarchical Intelligence**
+# 🏛️ JAIDA-OMEGA-SAIOS
+## Sovereign AI Threat Intelligence Platform
 
-[![Status](https://img.shields.io/badge/Status-Sovereign_Hierarchy_Active-brightgreen)](#)
-[![Tests](https://img.shields.io/badge/Tests-100%25_Passing-success)](#)
-[![Architecture](https://img.shields.io/badge/Architecture-GC%2FWD_Hierarchy-blue)](#)
-[![Autonomy](https://img.shields.io/badge/Autonomy-Bot_Father_Operational-orange)](#)
+A complete autonomous threat intelligence and cyber-defense platform with 7 integrated modules, persistent data layer, and self-healing capabilities.
 
-> **"Building unchecked sovereign AI with hierarchical persistence."**
+## 🚀 Features
 
-## 🔐 **Sovereign Vision**
+### **Core Architecture**
+- **OmegaNexus**: Central orchestrator with command interface
+- **SovereignDB**: Persistent data layer (SQLite) for bots, threats, operations
+- **AutonomousOps**: Self-healing operations with health checks & optimization
 
-**JAIDA-OMEGA-SAIOS** represents three integrated layers of autonomous intelligence:
+### **Intelligence Modules**
+- **Bot Father System**: Autonomous bot creation and management
+- **Web Crawler System**: Surface/deep/dark web threat intelligence
+- **Deception Technology**: Honeypots, canaries, breadcrumbs
+- **Threat Dashboard**: Real-time threat visualization
 
-1. **SAIOS** - Sovereign Authentic Intelligence Operating System  
-   *Foundation layer with JAI-LSD-25 authenticated execution*
-   
-2. **JAIDA** - Joint Authentic Intelligence Defense & Analytics  
-   *Platform layer with hierarchical bot architecture*
-   
-3. **OMEGA** - Operational Multi-faceted Enhanced Guardian Architecture  
-   *Implementation layer with threat intelligence capabilities*
+### **Sovereign Hierarchy**
+- **GC/WD System**: General Contractor / Worker Drone command structure
+- **Self-Documenting Context**: Automatic state tracking across sessions
+- **100% Test Coverage**: Comprehensive test suite for all components
 
-## 🏗️ **Architecture Overview**
+## 📦 Quick Start
 
-### **Hierarchical Bot System**
+```bash
+# Clone and setup
+git clone https://github.com/4rjuna-13/jaida-omega-saios.git
+cd jaida-omega-saios
+
+# Run the orchestrator
+python3 omega_nexus.py status
+
+# Start autonomous operations
+python3 omega_nexus.py autonomous
+
+# Deploy bot fleet
+python3 omega_nexus.py deploy
+
+# Generate threat intelligence
+python3 omega_nexus.py crawl
+
+# View persistent data
+python3 omega_nexus.py dbstatus
+# Complete the README.md file properly
+cat > README.md << 'EOF'
+# 🏛️ JAIDA-OMEGA-SAIOS
+## Sovereign AI Threat Intelligence Platform
+
+A complete autonomous threat intelligence and cyber-defense platform with 7 integrated modules, persistent data layer, and self-healing capabilities.
+
+## 🚀 Features
+
+### **Core Architecture**
+- **OmegaNexus**: Central orchestrator with command interface
+- **SovereignDB**: Persistent data layer (SQLite) for bots, threats, operations
+- **AutonomousOps**: Self-healing operations with health checks & optimization
+
+### **Intelligence Modules**
+- **Bot Father System**: Autonomous bot creation and management
+- **Web Crawler System**: Surface/deep/dark web threat intelligence
+- **Deception Technology**: Honeypots, canaries, breadcrumbs
+- **Threat Dashboard**: Real-time threat visualization
+
+### **Sovereign Hierarchy**
+- **GC/WD System**: General Contractor / Worker Drone command structure
+- **Self-Documenting Context**: Automatic state tracking across sessions
+- **100% Test Coverage**: Comprehensive test suite for all components
+
+## 📦 Quick Start
+
+```bash
+# Clone and setup
+git clone https://github.com/4rjuna-13/jaida-omega-saios.git
+cd jaida-omega-saios
+
+# Run the orchestrator
+python3 omega_nexus.py status
+
+# Start autonomous operations
+python3 omega_nexus.py autonomous
+
+# Deploy bot fleet
+python3 omega_nexus.py deploy
+
+# Generate threat intelligence
+python3 omega_nexus.py crawl
+
+# View persistent data
+python3 omega_nexus.py dbstatus
