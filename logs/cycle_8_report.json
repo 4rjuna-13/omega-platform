@@ -1,0 +1,22 @@
+{
+  "cycle": 8,
+  "timestamp": "2025-12-18T02:55:52.216115",
+  "alerts_generated": 3,
+  "total_alerts": 73,
+  "severity_counts": {
+    "CRITICAL": 16,
+    "HIGH": 14,
+    "INFO": 11,
+    "LOW": 22,
+    "MEDIUM": 10
+  },
+  "source_counts": {
+    "Cloud": 15,
+    "EDR": 23,
+    "Firewall": 11,
+    "IDS": 17,
+    "SIEM": 7
+  },
+  "threat_level": "\ud83d\udea8 CRITICAL",
+  "critical_count": 30
+}

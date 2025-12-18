@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  jaida-orchestrator:
+    build: .
+    container_name: jaida-orchestrator
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config:/app/config
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - DB_PATH=/app/data/sovereign_data.db
+    restart: unless-stopped
+    networks:
+      - jaida-network
+
+  real-data-adapter:
+    build: .
+    container_name: real-data-adapter
+    command: python3 real_data_adapter.py
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - ENVIRONMENT=production
+      - UPDATE_INTERVAL=300
+    restart: unless-stopped
+    networks:
+      - jaida-network
+    depends_on:
+      - jaida-orchestrator
+
+  threat-dashboard:
+    build: .
+    container_name: threat-dashboard
+    command: python3 real_data_dashboard.py
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DASHBOARD_PORT=8081
+    restart: unless-stopped
+    networks:
+      - jaida-network
+    depends_on:
+      - jaida-orchestrator
+
+networks:
+  jaida-network:
+    driver: bridge
+
+volumes:
+  data:
+  logs:

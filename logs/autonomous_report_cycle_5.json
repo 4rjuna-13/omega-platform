@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-12-18T02:13:04.310156",
+  "threat_level": "CRITICAL",
+  "total_alerts": 1009,
+  "alert_summary": {
+    "CRITICAL": 194,
+    "HIGH": 185,
+    "MEDIUM": 313,
+    "LOW": 317
+  },
+  "data_sources": [
+    "mock_edr",
+    "mock_firewall",
+    "mock_siem"
+  ],
+  "recommendations": [
+    "Initiate incident response procedures",
+    "Notify security team",
+    "Increase monitoring frequency"
+  ]
+}

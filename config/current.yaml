@@ -1,0 +1,58 @@
+# Production Configuration for JAIDA-Omega-SAIOS
+version: 1.0
+environment: production
+
+# Database Configuration
+database:
+  path: /app/data/sovereign_data.db
+  backup_interval: 3600  # 1 hour
+  max_size_mb: 1024
+
+# Data Sources Configuration
+data_sources:
+  siem:
+    enabled: true
+    type: mock  # Change to 'splunk', 'qradar', 'arcsight' for real sources
+    poll_interval: 300  # 5 minutes
+    batch_size: 100
+  
+  edr:
+    enabled: true
+    type: mock  # Change to 'crowdstrike', 'sentinelone', 'defender'
+    poll_interval: 300
+  
+  firewall:
+    enabled: true
+    type: mock  # Change to 'paloalto', 'fortinet', 'cisco'
+    poll_interval: 600
+
+# Alert Processing
+alert_processing:
+  severity_threshold: MEDIUM
+  deduplication_window: 3600  # 1 hour
+  correlation_window: 300  # 5 minutes
+  max_alerts_per_cycle: 1000
+
+# AI/ML Settings
+ai_engine:
+  threat_scoring_enabled: true
+  anomaly_detection_enabled: true
+  model_retrain_interval: 86400  # 24 hours
+
+# Monitoring & Logging
+monitoring:
+  metrics_port: 9090
+  health_check_interval: 30
+  alert_webhook: ""  # Set to your Slack/Teams webhook
+
+logging:
+  level: INFO
+  file: /app/logs/jaida.log
+  max_size_mb: 100
+  backup_count: 5
+
+# Performance Tuning
+performance:
+  max_workers: 4
+  queue_size: 1000
+  cache_ttl: 300

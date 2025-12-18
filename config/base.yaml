@@ -1,0 +1,11 @@
+# Base Configuration
+version: 1.0
+app_name: "JAIDA-Omega-SAIOS"
+
+database:
+  type: sqlite
+  timeout: 30
+
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

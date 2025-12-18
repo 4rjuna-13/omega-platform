@@ -1,0 +1,22 @@
+# Development Configuration
+environment: development
+
+database:
+  path: ./sovereign_data.db
+
+data_sources:
+  siem:
+    type: mock
+    poll_interval: 60  # 1 minute for faster testing
+  
+  edr:
+    type: mock
+  
+  firewall:
+    type: mock
+
+alert_processing:
+  severity_threshold: LOW  # More alerts in dev
+
+logging:
+  level: DEBUG
