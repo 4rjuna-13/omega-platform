@@ -1,17 +1,23 @@
+# Virtual environment
+venv/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-.Python
-*.so
+
+# Database
+sovereign_data.db
 *.db
-*.sqlite
+*.sqlite3
+
+# Logs
 *.log
-autonomous_cycle_*.json
-system_metrics.json
-nexus_data/
-omega_env/
-.DS_Store
+logs/
+
+# IDE
+.vscode/
+.idea/
 *.swp
 *.swo
-*~
+
+# Temporary
+tmp/
+/tmp/
