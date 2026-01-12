@@ -1,0 +1,77 @@
+# Omega Platform Default Configuration
+# This file contains all default settings
+
+platform:
+  name: "Omega Security Platform"
+  version: "3.0.0"
+  debug: false
+  log_level: "INFO"
+  log_json: true
+  
+modules:
+  deception:
+    enabled: true
+    port: 8080
+    honeypots:
+      - name: "ssh_honeypot"
+        type: "ssh"
+        port: 2222
+        banner: "SSH-2.0-OpenSSH_7.9p1"
+      - name: "http_honeypot"
+        type: "http"
+        port: 8081
+        template: "default_website"
+  
+  prediction:
+    enabled: true
+    model_path: "./data/models/threat_model.pkl"
+    update_frequency: 3600  # seconds
+    
+  response:
+    enabled: true
+    automated: true
+    escalation_threshold: 3
+    
+  simulation:
+    enabled: false
+    scenarios_path: "./data/scenarios/"
+    
+  collaboration:
+    enabled: false
+    
+  cloud:
+    enabled: false
+    
+  ai_assistant:
+    enabled: false
+
+api:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8000"
+  rate_limit: "100/hour"
+  
+security:
+  auth_required: false
+  audit_logging: true
+  encryption:
+    algorithm: "A256GCM"
+    key_rotation_days: 30
+  
+data:
+  storage_path: "./data"
+  retention_days: 90
+  backup_enabled: true
+  backup_schedule: "0 2 * * *"  # Daily at 2 AM
+  
+websocket:
+  enabled: true
+  port: 8765
+  
+web:
+  enabled: true
+  port: 3000
+  dashboard_refresh: 30  # seconds

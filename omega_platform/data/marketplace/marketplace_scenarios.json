@@ -1,0 +1,44 @@
+[
+  {
+    "id": "market_001",
+    "name": "Advanced Spear Phishing",
+    "description": "Advanced phishing with attachment and tracking",
+    "author": "Security Team",
+    "difficulty": "medium",
+    "mitre_techniques": [
+      "T1566",
+      "T1566.001"
+    ],
+    "downloads": 43,
+    "rating": 4.5,
+    "category": "phishing"
+  },
+  {
+    "id": "market_002",
+    "name": "Ransomware Impact Simulation",
+    "description": "Simulate ransomware encryption and impact",
+    "author": "Red Team",
+    "difficulty": "hard",
+    "mitre_techniques": [
+      "T1486",
+      "T1490"
+    ],
+    "downloads": 29,
+    "rating": 4.2,
+    "category": "ransomware"
+  },
+  {
+    "id": "market_003",
+    "name": "Web Application Exploit",
+    "description": "Simulate web app vulnerability exploitation",
+    "author": "PenTest Team",
+    "difficulty": "medium",
+    "mitre_techniques": [
+      "T1190",
+      "T1210"
+    ],
+    "downloads": 35,
+    "rating": 4.0,
+    "category": "web"
+  }
+]

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Omega Platform v4.5 Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .card { border: 1px solid #ccc; padding: 20px; margin: 10px; border-radius: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .module { background: #f5f5f5; }
+        .healthy { background: #d4edda; }
+        .warning { background: #fff3cd; }
+    </style>
+</head>
+<body>
+    <h1>🏗️ Omega Platform v4.5 Dashboard</h1>
+    
+    <div class="grid">
+        <div class="card module">
+            <h3>MITRE ATT&CK</h3>
+            <div id="mitre-status">Loading...</div>
+        </div>
+        
+        <div class="card module">
+            <h3>Scenario Manager</h3>
+            <div id="scenario-status">Loading...</div>
+        </div>
+        
+        <div class="card module">
+            <h3>Security Data Lake</h3>
+            <div id="datalake-status">Loading...</div>
+        </div>
+        
+        <div class="card module">
+            <h3>Scenario Marketplace</h3>
+            <div id="marketplace-status">Loading...</div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>ATT&CK Matrix Coverage</h3>
+        <div id="matrix-coverage">Loading...</div>
+    </div>
+    
+    <div class="card">
+        <h3>Recent Activity</h3>
+        <div id="recent-activity">Loading...</div>
+    </div>
+    
+    <script>
+        async function loadData() {
+            // Load status
+            const status = await fetch('/api/status').then(r => r.json());
+            
+            // Update module status
+            document.getElementById('mitre-status').innerHTML = 
+                `Techniques: ${status.mitre_techniques || 0}`;
+            
+            document.getElementById('scenario-status').innerHTML = 
+                `Scenarios: ${status.scenarios || 0}`;
+            
+            document.getElementById('datalake-status').innerHTML = 
+                `Events: ${status.data_lake_events || 0}`;
+            
+            if (status.marketplace) {
+                document.getElementById('marketplace-status').innerHTML = 
+                    `Scenarios: ${status.marketplace.total_scenarios}<br>` +
+                    `Downloads: ${status.marketplace.total_downloads}`;
+            }
+            
+            // Load ATT&CK Matrix
+            try {
+                const matrix = await fetch('/api/attack-matrix').then(r => r.json());
+                document.getElementById('matrix-coverage').innerHTML = 
+                    `Coverage: ${matrix.stats.coverage_percentage.toFixed(1)}%<br>` +
+                    `Techniques: ${matrix.stats.techniques_covered}<br>` +
+                    `Gaps: ${matrix.stats.coverage_gaps.length}`;
+            } catch (e) {
+                document.getElementById('matrix-coverage').innerHTML = 
+                    `Matrix data unavailable`;
+            }
+            
+            // Load recent events
+            const events = await fetch('/api/data-lake/events?limit=5').then(r => r.json());
+            if (events.events && events.events.length > 0) {
+                let html = '<ul>';
+                events.events.forEach(e => {
+                    html += `<li>${e.scenario_name} - ${e.event_type}</li>`;
+                });
+                html += '</ul>';
+                document.getElementById('recent-activity').innerHTML = html;
+            }
+        }
+        
+        // Load data on page load
+        loadData();
+        // Refresh every 30 seconds
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

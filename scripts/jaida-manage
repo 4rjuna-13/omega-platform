@@ -1,0 +1,131 @@
+#!/bin/bash
+# JAIDA Management Script
+
+JAIDA_PID_FILE="/tmp/jaida.pid"
+LOG_FILE="logs/jaida.log"
+
+case "$1" in
+    "start")
+        echo "🚀 Starting JAIDA..."
+        source venv/bin/activate 2>/dev/null || echo "⚠️  Virtual environment not found"
+        mkdir -p logs data
+        
+        # Stop any existing instance
+        if [ -f "$JAIDA_PID_FILE" ]; then
+            PID=$(cat "$JAIDA_PID_FILE")
+            kill "$PID" 2>/dev/null || true
+        fi
+        
+        # Start the system
+        python3 jaida.py 2>&1 | tee "$LOG_FILE" &
+        echo $! > "$JAIDA_PID_FILE"
+        
+        echo "✅ JAIDA started (PID: $(cat "$JAIDA_PID_FILE"))"
+        echo "📝 Logs: tail -f $LOG_FILE"
+        ;;
+    
+    "stop")
+        echo "🛑 Stopping JAIDA..."
+        
+        if [ -f "$JAIDA_PID_FILE" ]; then
+            PID=$(cat "$JAIDA_PID_FILE")
+            if kill -0 "$PID" 2>/dev/null; then
+                kill "$PID"
+                echo "✅ Stopped JAIDA (PID: $PID)"
+            else
+                echo "⚠️  JAIDA process not running"
+            fi
+            rm -f "$JAIDA_PID_FILE"
+        else
+            # Try to find and kill any JAIDA processes
+            PIDS=$(pgrep -f "python.*jaida" || true)
+            if [ -n "$PIDS" ]; then
+                kill $PIDS 2>/dev/null || true
+                echo "✅ Stopped JAIDA processes"
+            else
+                echo "✅ No JAIDA processes found"
+            fi
+        fi
+        ;;
+    
+    "status")
+        echo "📊 JAIDA Status"
+        echo "=============="
+        
+        if [ -f "$JAIDA_PID_FILE" ] && kill -0 $(cat "$JAIDA_PID_FILE") 2>/dev/null; then
+            echo "✅ Running (PID: $(cat "$JAIDA_PID_FILE"))"
+            echo ""
+            echo "📈 Database Stats:"
+            python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('data/sovereign_data.db')
+    cursor = conn.cursor()
+    cursor.execute(\"SELECT name FROM sqlite_master WHERE type='table';\")
+    tables = cursor.fetchall()
+    print(f'   Tables: {len(tables)}')
+    for table in tables:
+        cursor.execute(f'SELECT COUNT(*) FROM {table[0]}')
+        count = cursor.fetchone()[0]
+        print(f'   - {table[0]}: {count} rows')
+    conn.close()
+except Exception as e:
+    print(f'   ❌ Error: {e}')
+"
+        else
+            echo "❌ Not running"
+        fi
+        
+        echo ""
+        echo "📁 Disk Usage:"
+        du -h data/sovereign_data.db 2>/dev/null || echo "   Database not found"
+        echo ""
+        echo "📝 Latest Log:"
+        tail -3 "$LOG_FILE" 2>/dev/null || echo "   No log file"
+        ;;
+    
+    "dashboard")
+        echo "📊 Starting Dashboard..."
+        source venv/bin/activate 2>/dev/null || echo "⚠️  Virtual environment not found"
+        python3 -c "
+import sys
+sys.path.insert(0, 'src')
+from dashboard.jaida_dashboard import JAIDADashboard
+dashboard = JAIDADashboard()
+dashboard.display_dashboard()
+" &
+        echo "✅ Dashboard started in background"
+        echo "   Access logs: tail -f logs/jaida.log"
+        ;;
+    
+    "logs")
+        echo "📝 JAIDA Logs:"
+        if [ -f "$LOG_FILE" ]; then
+            tail -20 "$LOG_FILE"
+        else
+            echo "No log file found"
+        fi
+        ;;
+    
+    "clean")
+        echo "🧹 Cleaning up..."
+        ./scripts/jaida-manage stop
+        rm -rf __pycache__ */__pycache__ */*/__pycache__
+        rm -f logs/*.log
+        echo "✅ Cleanup completed"
+        ;;
+    
+    *)
+        echo "JAIDA-Omega-SAIOS Management"
+        echo ""
+        echo "Usage: $0 {start|stop|status|dashboard|logs|clean}"
+        echo ""
+        echo "Commands:"
+        echo "  start     - Start JAIDA system"
+        echo "  stop      - Stop JAIDA system"
+        echo "  status    - Check system status"
+        echo "  dashboard - Start web dashboard"
+        echo "  logs      - Show recent logs"
+        echo "  clean     - Clean cache and logs"
+        ;;
+esac

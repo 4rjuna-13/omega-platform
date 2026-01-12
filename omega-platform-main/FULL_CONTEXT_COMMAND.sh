@@ -1,0 +1,134 @@
+#!/bin/bash
+echo "🔍 Generating complete Omega/JAIDA/SAIOS context..."
+
+# Create master context file
+cat > OMEGA_JAIDA_SAIOS_FULL_CONTEXT.txt << 'CONTENT'
+# 🏛️ OMEGA PLATFORM WITH JAIDA & SAIOS - COMPLETE SYSTEM CONTEXT
+## 📋 COPY EVERYTHING FROM HERE DOWN FOR NEW CONVERSATIONS
+
+## 🕒 GENERATED: $(date)
+## 📁 LOCATION: $(pwd)
+## 👤 USER: $(whoami)
+
+## 📊 SYSTEM OVERVIEW:
+Omega Platform: Autonomous threat intelligence and response system
+JAIDA: AI-driven orchestrator and decision engine  
+SAIOS: Foundational AI/OS layer
+
+## 🔧 CURRENT STATUS CHECK:
+$(python3 test_all_components.py 2>&1)
+
+## 📁 PROJECT STRUCTURE:
+$(find . -maxdepth 2 -type f -name "*.py" -o -name "*.sh" -o -name "*.md" -o -name "*.json" | head -30 | sort)
+
+## 🗄️ KEY FILES & SIZES:
+$(ls -la *.py *.sh *.md *.db *.json 2>/dev/null | head -20)
+
+## 🏗️ CORE COMPONENTS:
+1. **JAIDA Orchestrator** ($(ls -la jaida unified_orchestrator.py 2>/dev/null | head -1 | awk '{print $5}') bytes)
+2. **Omega Nexus** ($(ls -la omega_nexus*.py | head -1 | awk '{print $5}') bytes)
+3. **SAIOS Foundation** ($(ls -la saios_*.py 2>/dev/null | head -1 | awk '{print $5}') bytes)
+4. **Sovereign Database** ($(du -h sovereign_data.db 2>/dev/null || echo "0") )
+5. **Autonomous Engine** ($(ls -la autonomous_*.py | head -1 | awk '{print $5}') bytes)
+
+## 🧪 COMPONENT HEALTH:
+$(python3 -c "
+import sys
+sys.path.insert(0, '.')
+components = [
+    ('JAIDA (unified_orchestrator)', 'unified_orchestrator'),
+    ('Omega Nexus', 'omega_nexus_real_integration'),
+    ('SAIOS Foundation', 'saios_foundation'),
+    ('Sovereign DB', 'sovereign_db'),
+    ('Autonomous Ops', 'autonomous_ops'),
+    ('Threat Dashboard', 'simple_threat_dashboard'),
+]
+for name, module in components:
+    try:
+        __import__(module)
+        print(f'✅ {name}: LOADS')
+    except Exception as e:
+        print(f'❌ {name}: ERROR - {str(e)[:40]}')
+" 2>&1)
+
+## 📈 DATABASE STATUS:
+$(python3 -c "
+import sys
+sys.path.insert(0, '.')
+try:
+    import sqlite3
+    import os
+    db_path = 'sovereign_data.db'
+    if os.path.exists(db_path):
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute(\"SELECT name FROM sqlite_master WHERE type='table';\")
+        tables = cursor.fetchall()
+        print(f'📊 Database: {db_path}')
+        print(f'📋 Tables: {len(tables)}')
+        for table in tables[:5]:
+            cursor.execute(f\"SELECT COUNT(*) FROM {table[0]};\")
+            count = cursor.fetchone()[0]
+            print(f'   - {table[0]}: {count} rows')
+        conn.close()
+    else:
+        print('📊 Database: Not found')
+except Exception as e:
+    print(f'📊 Database check error: {e}')
+" 2>&1)
+
+## 🚀 RECENT ACTIVITY:
+$(find . -name "*.py" -o -name "*.sh" -o -name "*.md" | xargs ls -lt 2>/dev/null | head -10 | awk '{print $6" "$7" "$8" "$9}')
+
+## 🎯 QUICK START COMMANDS:
+\`\`\`bash
+# Start JAIDA orchestrator:
+./jaida  # or python3 unified_orchestrator.py
+
+# Run Omega platform:
+python3 omega_nexus_real_integration.py
+
+# Update this context:
+./JAIDA_CONTEXT_SYSTEM.sh update
+
+# View context for new chats:
+./JAIDA_CONTEXT_SYSTEM.sh recall
+
+# Run all tests:
+python3 test_all_components.py
+
+# Check system status:
+./show_system_status.sh 2>/dev/null || echo "Status script not found"
+\`\`\`
+
+## ⚠️ KNOWN ISSUES:
+- Threat dashboard test shows FAIL but component loads
+- Some tests may need adjustment for empty databases
+- Context system requires manual intervention sometimes
+
+## 🎯 NEXT DEVELOPMENT PRIORITIES:
+1. Fix test suite false negatives
+2. Enhance autonomous decision logic
+3. Expand threat intelligence collection
+4. Improve context management automation
+
+## 🔗 RELATED FILES:
+- JAIDA_OMEGA_SAIOS_FINAL_CONTEXT.md (11.9KB - previous context)
+- CONTEXT_FOR_NEW_CHAT.txt (9.3KB - chat context)
+- README_AUTONOMOUS.md (1.4KB - autonomous docs)
+- VICTORY_LOG.md (1.8KB - progress log)
+
+## 📝 ENVIRONMENT:
+$(python3 --version 2>&1)
+$(pip list 2>/dev/null | grep -E "(pandas|numpy|flask|sqlite)" || echo "Core packages: Unknown")
+
+## 🏁 END OF CONTEXT - PASTE EVERYTHING ABOVE FOR NEW CONVERSATIONS
+CONTENT
+
+echo "✅ Complete context generated: OMEGA_JAIDA_SAIOS_FULL_CONTEXT.txt"
+echo "📄 File size: $(wc -l < OMEGA_JAIDA_SAIOS_FULL_CONTEXT.txt) lines"
+echo ""
+echo "📋 TO UPDATE ME IN NEW CONVERSATIONS:"
+echo "1. Copy everything starting from '# 🏛️ OMEGA PLATFORM WITH JAIDA & SAIOS'"
+echo "2. Paste it at the beginning of new conversations"
+echo "3. I'll have full understanding of your system"

@@ -1,0 +1,8 @@
+{
+  "id": "phish_001",
+  "name": "Basic Phishing",
+  "mitre_techniques": [
+    "T1566"
+  ],
+  "difficulty": "easy"
+}

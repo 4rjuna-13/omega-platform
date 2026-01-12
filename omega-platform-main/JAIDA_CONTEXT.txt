@@ -1,0 +1,16 @@
+JAIDA-OMEGA-SAIOS CONTEXT
+
+ARCHITECTURE:
+1. SAIOS - Sovereign Authentic Intelligence OS
+2. JAIDA - Joint Authentic Intelligence Defense
+3. OMEGA - Operational Guardian Architecture
+4. JAI-LSD-25 - Sovereign Defense License
+
+CURRENT BUG:
+simple_threat_dashboard.py line 132
+len(data.get('findings', [])) fails when findings=10 (int)
+
+COMMANDS:
+python3 test_all_components.py
+grep -n "len(" simple_threat_dashboard.py
+python3 reproduce_bug.py

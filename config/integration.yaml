@@ -1,0 +1,38 @@
+# JAIDA-OMEGA-SAIOS Real Integration Configuration
+
+alert_sources:
+  omega_nexus_api:
+    enabled: false
+    endpoint: "http://localhost:8080/api/alerts/stream"
+    poll_interval: 5
+    api_key: "demo_key"
+    
+  web_crawler:
+    enabled: false
+    data_dir: "data/web_crawler/intel"
+    poll_interval: 30
+    
+  file_monitor:
+    enabled: false
+    watch_dir: "data/omega_nexus/alerts"
+    file_pattern: "*.json"
+    
+  demo_mode:
+    enabled: true
+    generate_test_alerts: true
+    alert_interval: 5
+
+processing:
+  alert_threshold: 0.7
+  filter_low_confidence: true
+  deduplicate_alerts: true
+  max_queue_size: 1000
+
+autonomous_integration:
+  bridge_endpoint: "http://localhost:8081/process_alert"
+  fallback_to_simulated: true
+  retry_attempts: 3
+
+demo_mode:
+  enabled: true
+  alert_interval: 5

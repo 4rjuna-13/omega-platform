@@ -1,0 +1,41 @@
+# Autonomous Decision Engine Configuration
+
+decision_weights:
+  malware:
+    deploy_bots: 0.9
+    isolate_threat: 0.8
+    activate_honeypot: 0.6
+  phishing:
+    activate_honeypot: 0.8
+    gather_intel: 0.7
+    escalate_intel: 0.6
+  ddos:
+    deploy_bots: 0.9
+    adapt_config: 0.7
+    isolate_threat: 0.8
+  zero_day:
+    escalate_intel: 0.9
+    gather_intel: 0.8
+    counter_measure: 0.7
+
+response_templates:
+  deploy_bots:
+    low: {count: 3, type: "monitor", priority: 1}
+    medium: {count: 5, type: "defender", priority: 2}
+    high: {count: 10, type: "defender", priority: 3}
+    critical: {count: 20, type: "aggressive", priority: 5}
+  
+  activate_honeypot:
+    low: {level: "basic", deception: "static"}
+    medium: {level: "interactive", deception: "dynamic"}
+    high: {level: "advanced", deception: "adaptive"}
+    critical: {level: "aggressive", deception: "deceptive"}
+
+threat_scoring:
+  severity_weights:
+    suspicious: 0.3
+    malicious: 0.6
+    critical: 0.9
+  
+  confidence_multiplier: 1.2
+  recency_decay_hours: 24

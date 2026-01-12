@@ -1,0 +1,32 @@
+# JAIDA-OMEGA-SAIOS Configuration
+version: "2.0-autonomous"
+
+system:
+  name: "JAIDA-OMEGA-SAIOS"
+  mode: "autonomous"
+  log_level: "INFO"
+  
+database:
+  path: "data/sovereign.db"
+  backup_interval: 3600
+  max_backups: 10
+
+autonomous:
+  enabled: true
+  decision_confidence_threshold: 0.7
+  max_pending_decisions: 50
+  execution_interval: 60
+  learning_enabled: true
+
+modules:
+  core_orchestrator: true
+  autonomous_engine: true
+  bot_father: true
+  web_crawler: true
+  deception_tech: true
+  sovereign_db: true
+
+security:
+  encryption_enabled: true
+  authentication_required: false
+  api_rate_limit: 100

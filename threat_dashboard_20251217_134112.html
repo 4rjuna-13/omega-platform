@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Omega Platform - Threat Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .metric { display: inline-block; width: 200px; margin: 10px; padding: 15px; background: #f0f0f0; border-radius: 5px; text-align: center; }
+        .metric-value { font-size: 2em; font-weight: bold; color: #007acc; }
+        .severity { padding: 3px 8px; border-radius: 3px; margin: 2px; display: inline-block; }
+        .critical { background: #dc3545; color: white; }
+        .high { background: #fd7e14; color: white; }
+        .medium { background: #ffc107; }
+        .low { background: #28a745; color: white; }
+        .info { background: #17a2b8; color: white; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #007acc; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Omega Platform - Threat Intelligence Dashboard</h1>
+            <p>Generated: 2025-12-17T13:41:12.837016</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <div class="metric">
+                <div>Total Indicators</div>
+                <div class="metric-value">4</div>
+            </div>
+            <div class="metric">
+                <div>Active Alerts</div>
+                <div class="metric-value">3</div>
+            </div>
+            <div class="metric">
+                <div>Recent Activity</div>
+                <div class="metric-value">4</div>
+            </div>
+            <div class="metric">
+                <div>MITRE Coverage</div>
+                <div class="metric-value">6</div>
+            </div>
+        </div>
+        
+        <h2>Threat Severity Breakdown</h2>
+
+        <div>
+            <span class="severity high">HIGH</span>
+            <span>3 indicators</span>
+        </div>
+
+        <div>
+            <span class="severity medium">MEDIUM</span>
+            <span>1 indicators</span>
+        </div>
+
+        <h2>Recent Alerts</h2>
+        <table>
+            <tr><th>Time</th><th>Severity</th><th>Title</th><th>Source</th></tr>
+
+            <tr>
+                <td>13:41</td>
+                <td><span class="severity high">HIGH</span></td>
+                <td>High Risk: Healthcare Threat Model</td>
+                <td>Threat Modeler</td>
+            </tr>
+
+            <tr>
+                <td>13:41</td>
+                <td><span class="severity medium">MEDIUM</span></td>
+                <td>Exercise Complete: Ransomware Response</td>
+                <td>Purple Team</td>
+            </tr>
+
+            <tr>
+                <td>13:41</td>
+                <td><span class="severity high">HIGH</span></td>
+                <td>Deception System Activity</td>
+                <td>Deception Tech</td>
+            </tr>
+
+        </table>
+        
+        <h2>Recommendations</h2>
+        <ul>
+
+            <li>
+                <span class="severity medium">MEDIUM</span>
+                Investigate deception system alerts
+                <br><small>1 potential intrusion attempts detected</small>
+            </li>
+
+        </ul>
+        
+        <div style="text-align: center; margin-top: 40px; color: #666;">
+            <p>Omega Platform - Advanced Security Testing Framework</p>
+            <p>Generated automatically by the threat intelligence system</p>
+        </div>
+    </div>
+</body>
+</html>

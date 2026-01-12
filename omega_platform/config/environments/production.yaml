@@ -1,0 +1,12 @@
+# Production Environment Overrides
+platform:
+  debug: false
+  log_level: "WARNING"
+
+security:
+  auth_required: true
+  audit_logging: true
+  
+data:
+  backup_enabled: true
+  backup_schedule: "0 2 * * *"  # Daily at 2 AM UTC

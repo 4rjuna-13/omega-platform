@@ -1,0 +1,62 @@
+{
+  "id": "apt_campaign_advanced",
+  "name": "Advanced APT Campaign",
+  "description": "Comprehensive APT simulation with multiple stages and techniques",
+  "difficulty": "hard",
+  "estimated_time": 2400,
+  "tags": ["apt", "advanced", "campaign", "persistent"],
+  "steps": [
+    {
+      "type": "reconnaissance",
+      "target": "full_network",
+      "duration": 120,
+      "techniques": ["passive_dns", "port_scan", "vulnerability_scan"]
+    },
+    {
+      "type": "initial_access",
+      "method": "spear_phishing",
+      "targets": 3,
+      "payload": "malicious_document"
+    },
+    {
+      "type": "persistence",
+      "technique": "scheduled_task",
+      "level": "system"
+    },
+    {
+      "type": "privilege_escalation",
+      "method": "exploit",
+      "vulnerability": "CVE-2023-12345"
+    },
+    {
+      "type": "defense_evasion",
+      "techniques": ["process_hollowing", "rootkit"]
+    },
+    {
+      "type": "credential_access",
+      "method": "lsass_dump",
+      "tools": ["mimikatz"]
+    },
+    {
+      "type": "lateral_movement",
+      "technique": "pass_the_ticket",
+      "systems_targeted": 5
+    },
+    {
+      "type": "collection",
+      "data_types": ["credentials", "documents", "emails"],
+      "duration": 300
+    },
+    {
+      "type": "exfiltration",
+      "method": "dns_tunneling",
+      "data_size": "500MB",
+      "stealth_level": "high"
+    },
+    {
+      "type": "impact",
+      "action": "data_destruction",
+      "backdoor_installation": true
+    }
+  ]
+}

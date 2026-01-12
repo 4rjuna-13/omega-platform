@@ -1,0 +1,46 @@
+# Omega Platform Dashboard Configuration
+
+dashboard:
+  name: "Omega Simulation Dashboard"
+  version: "3.0.0"
+  
+  server:
+    host: "0.0.0.0"
+    port: 5000
+    debug: false
+    reload: false
+    
+  features:
+    demo_mode: true
+    auto_refresh: true
+    refresh_interval: 30  # seconds
+    enable_metrics: true
+    enable_logging: true
+    
+  security:
+    cors_enabled: true
+    rate_limit_enabled: false
+    api_key_required: false
+    
+  ui:
+    theme: "dark"
+    language: "en"
+    timezone: "UTC"
+    
+  integrations:
+    omega_platform:
+      enabled: true
+      config_path: "config/defaults.yaml"
+      environment: "development"
+    
+  logging:
+    level: "INFO"
+    format: "json"
+    file: "logs/dashboard.log"
+    
+  endpoints:
+    health_check: "/api/health"
+    status: "/api/status"
+    scenarios: "/api/simulation/scenarios"
+    honeypots: "/api/deception/honeypots"
+    metrics: "/api/metrics"

@@ -1,0 +1,117 @@
+#!/bin/bash
+# JAIDA Dashboard Management
+
+DASHBOARD_PID_FILE="/tmp/jaida_dashboard.pid"
+DASHBOARD_LOG="logs/dashboard.log"
+DASHBOARD_PORT=8080
+
+case "$1" in
+    "start")
+        echo "🌐 Starting JAIDA Web Dashboard..."
+        
+        # Check if already running
+        if [ -f "$DASHBOARD_PID_FILE" ]; then
+            PID=$(cat "$DASHBOARD_PID_FILE")
+            if kill -0 "$PID" 2>/dev/null; then
+                echo "⚠️ Dashboard already running (PID: $PID)"
+                echo "   Access: http://localhost:$DASHBOARD_PORT"
+                exit 0
+            fi
+        fi
+        
+        # Ensure dependencies
+        source venv/bin/activate 2>/dev/null || echo "⚠️  Activating venv"
+        pip install flask 2>/dev/null || true
+        
+        # Create necessary directories
+        mkdir -p logs
+        mkdir -p src/dashboard/templates
+        mkdir -p src/dashboard/static/css
+        mkdir -p src/dashboard/static/js
+        
+        # Start dashboard
+        python3 -c "
+import sys
+sys.path.insert(0, '.')
+from src.dashboard.web_app import app
+print(f'🚀 Dashboard starting on port $DASHBOARD_PORT...')
+app.run(host='0.0.0.0', port=$DASHBOARD_PORT, debug=False)
+" 2>&1 | tee "$DASHBOARD_LOG" &
+        
+        echo $! > "$DASHBOARD_PID_FILE"
+        echo "✅ Dashboard started (PID: $(cat "$DASHBOARD_PID_FILE"))"
+        echo "🌐 Access: http://localhost:$DASHBOARD_PORT"
+        echo "📝 Logs: tail -f $DASHBOARD_LOG"
+        ;;
+    
+    "stop")
+        echo "🛑 Stopping Dashboard..."
+        
+        if [ -f "$DASHBOARD_PID_FILE" ]; then
+            PID=$(cat "$DASHBOARD_PID_FILE")
+            if kill -0 "$PID" 2>/dev/null; then
+                kill "$PID"
+                echo "✅ Stopped dashboard (PID: $PID)"
+            else
+                echo "⚠️  Dashboard not running"
+            fi
+            rm -f "$DASHBOARD_PID_FILE"
+        else
+            PIDS=$(pgrep -f "web_app.py" 2>/dev/null || true)
+            if [ -n "$PIDS" ]; then
+                kill $PIDS
+                echo "✅ Stopped dashboard processes"
+            else
+                echo "✅ No dashboard running"
+            fi
+        fi
+        ;;
+    
+    "status")
+        echo "📊 Dashboard Status"
+        echo "=================="
+        
+        if [ -f "$DASHBOARD_PID_FILE" ] && kill -0 $(cat "$DASHBOARD_PID_FILE") 2>/dev/null; then
+            echo "✅ Running (PID: $(cat "$DASHBOARD_PID_FILE"))"
+            echo "🌐 URL: http://localhost:$DASHBOARD_PORT"
+            echo ""
+            echo "📈 Recent logs:"
+            tail -5 "$DASHBOARD_LOG" 2>/dev/null || echo "   No log file"
+        else
+            echo "❌ Not running"
+            echo ""
+            echo "To start: ./scripts/dashboard-manage start"
+        fi
+        ;;
+    
+    "logs")
+        echo "📝 Dashboard Logs:"
+        if [ -f "$DASHBOARD_LOG" ]; then
+            tail -20 "$DASHBOARD_LOG"
+        else
+            echo "No log file found"
+        fi
+        ;;
+    
+    "restart")
+        echo "🔁 Restarting Dashboard..."
+        ./scripts/dashboard-manage stop
+        sleep 2
+        ./scripts/dashboard-manage start
+        ;;
+    
+    *)
+        echo "🌐 JAIDA Web Dashboard Management"
+        echo ""
+        echo "Usage: $0 {start|stop|status|logs|restart}"
+        echo ""
+        echo "Commands:"
+        echo "  start    - Start web dashboard"
+        echo "  stop     - Stop web dashboard"
+        echo "  status   - Check dashboard status"
+        echo "  logs     - Show dashboard logs"
+        echo "  restart  - Restart dashboard"
+        echo ""
+        echo "Default URL: http://localhost:8080"
+        ;;
+esac

@@ -1,0 +1,23 @@
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Database
+sovereign_data.db
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary
+tmp/
+/tmp/

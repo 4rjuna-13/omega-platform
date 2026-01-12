@@ -1,0 +1,40 @@
+# Development Environment Overrides
+platform:
+  debug: true
+  log_level: "DEBUG"
+  log_json: false  # Plain text for easier reading in dev
+
+modules:
+  deception:
+    enabled: true
+    use_legacy: true
+    honeypots:
+      - name: "dev_ssh_honeypot"
+        type: "ssh"
+        port: 2222
+        banner: "SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3"
+      - name: "dev_http_honeypot"
+        type: "http"
+        port: 8081
+        template: "dev_website"
+  
+  prediction:
+    enabled: false  # Disable for now until migrated
+    use_legacy: true
+    
+  response:
+    enabled: false  # Disable for now until migrated
+    use_legacy: true
+    
+  simulation:
+    enabled: true
+    scenarios_path: "./data/scenarios/"
+    auto_schedule: false  # Don't auto-run in dev
+    save_custom_scenarios: true
+
+api:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins:
+    - "*"  # Allow all in development

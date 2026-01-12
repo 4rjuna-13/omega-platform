@@ -1,0 +1,19 @@
+{
+  "version": "3.0.0",
+  "debug": false,
+  "safe_mode": true,
+  "tutorial_progress_file": "./data/tutorial_progress.json",
+  "modules": {
+    "tutorial": true,
+    "deception": true,
+    "autonomous_response": true,
+    "attack_simulation": false,
+    "defense_training": false,
+    "threat_hunting": false
+  },
+  "training": {
+    "difficulty": "beginner",
+    "enable_hints": true,
+    "max_hints": 3
+  }
+}

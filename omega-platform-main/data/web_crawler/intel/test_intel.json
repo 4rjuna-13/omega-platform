@@ -1,0 +1,13 @@
+{
+  "intel_id": "INTEL-001",
+  "source": "test_feed",
+  "threat_type": "phishing_campaign",
+  "severity": 7,
+  "confidence": 0.75,
+  "summary": "Test phishing campaign intelligence",
+  "details": {
+    "targets": ["financial sector"],
+    "indicators": ["phishing-domain.com"],
+    "first_seen": "2024-01-01"
+  }
+}

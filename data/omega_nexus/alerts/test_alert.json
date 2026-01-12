@@ -1,0 +1,14 @@
+{
+  "alert_id": "FILE-ALERT-001",
+  "source": "file_test",
+  "alert_type": "test_alert",
+  "severity": 8,
+  "confidence": 0.85,
+  "description": "Test alert from file",
+  "timestamp": "2024-01-01T12:00:00",
+  "details": {
+    "source_ip": "192.168.1.100",
+    "target": "server-01",
+    "threat_type": "test"
+  }
+}

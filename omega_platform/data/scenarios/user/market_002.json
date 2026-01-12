@@ -1,0 +1,16 @@
+{
+  "id": "market_002",
+  "name": "Ransomware Impact Simulation",
+  "description": "Simulate ransomware encryption and impact",
+  "author": "Red Team",
+  "difficulty": "hard",
+  "mitre_techniques": [
+    "T1486",
+    "T1490"
+  ],
+  "downloads": 28,
+  "rating": 4.2,
+  "category": "ransomware",
+  "imported_at": "2025-12-17T00:02:04.682207",
+  "source": "marketplace"
+}
