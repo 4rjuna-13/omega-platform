@@ -38,7 +38,7 @@ except ImportError as e:
                 "tasks": ["Analyze provided data", "Implement security controls"]
             }
 
-OTX_API_KEY = "4c41d0e7969d1fbb6dd799e565f3c1dd80460946aa1474dcc12aa5eb695c6816"
+OTX_API_KEY = 'REDACTED'
 
 def fetch_and_analyze_pulses():
     """Fetch and analyze OTX threat intelligence."""
